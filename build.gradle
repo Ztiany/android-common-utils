@@ -30,23 +30,23 @@ android {
 }
 
 dependencies {
-    //AndroidX
-    compileOnly "androidx.annotation:annotation:1.3.0"
-    compileOnly "androidx.fragment:fragment-ktx:1.4.1"
-    compileOnly "androidx.activity:activity-ktx:1.4.0"
-    compileOnly "androidx.appcompat:appcompat:1.4.2"
-    compileOnly "com.google.android.material:material:1.6.1"
-    compileOnly "androidx.viewpager2:viewpager2:1.0.0"
+   //AndroidX
+    compileOnly AndroidLibraries.annotations
+    compileOnly AndroidLibraries.activityKtx
+    compileOnly AndroidLibraries.fragmentKtx
+    compileOnly AndroidLibraries.appcompat
+    compileOnly AndroidLibraries.material
+    compileOnly AndroidLibraries.viewpager2
 
     //Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
+    compileOnly KotlinLibraries.kotlinStdlib
+    compileOnly KotlinLibraries.kotlinReflect
+    compileOnly KotlinLibraries.kotlinCoroutines
+    compileOnly KotlinLibraries.kotlinAndroidCoroutines
 
     //Utils
-    implementation "com.squareup.okio:okio:2.10.0"
-    implementation "com.jakewharton.timber:timber:4.7.1"
+    implementation ThirdLibraries.okIO
+    implementation ThirdLibraries.timber
 
     //不直接引入，需要什么就复制什么。
     //https://juejin.cn/user/1978776659167981
