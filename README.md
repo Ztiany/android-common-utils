@@ -1,3 +1,3 @@
-# Lib Android Utils
+some common utils for android development. check out [android-architecture-practice](https://github.com/Ztiany/android-architecture-practice) for detail.
 
-Android 常用工具类封装，部分工具类拷贝自开源项目 [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)。
+> parts of these utils are copied from [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode).
