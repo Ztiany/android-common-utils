@@ -1,0 +1,55 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+android {
+    compileSdkVersion AppConfig.compileSdkVersion
+    buildToolsVersion AppConfig.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion AppConfig.minSdkVersion
+        targetSdkVersion AppConfig.targetSdkVersion
+        versionCode AppConfig.versionCode
+        versionName AppConfig.versionName
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+}
+
+dependencies {
+    //AndroidX
+    compileOnly "androidx.annotation:annotation:1.3.0"
+    compileOnly "androidx.fragment:fragment-ktx:1.4.1"
+    compileOnly "androidx.activity:activity-ktx:1.4.0"
+    compileOnly "androidx.appcompat:appcompat:1.4.2"
+    compileOnly "com.google.android.material:material:1.6.1"
+    compileOnly "androidx.viewpager2:viewpager2:1.0.0"
+
+    //Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
+
+    //Utils
+    implementation "com.squareup.okio:okio:2.10.0"
+    implementation "com.jakewharton.timber:timber:4.7.1"
+
+    //不直接引入，需要什么就复制什么。
+    //https://juejin.cn/user/1978776659167981
+    //https://github.com/Blankj/AndroidUtilCode
+    //compileOnly "com.blankj:utilcodex:1.30.0"
+}
