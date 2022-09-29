@@ -3,8 +3,6 @@ plugins {
     id "kotlin-android"
 }
 
-apply plugin: "com.vanniktech.maven.publish"
-
 android {
     compileSdkVersion AppConfig.compileSdkVersion
     buildToolsVersion AppConfig.buildToolsVersion
@@ -32,7 +30,7 @@ android {
 }
 
 dependencies {
-   //AndroidX
+    //AndroidX
     compileOnly AndroidLibraries.annotations
     compileOnly AndroidLibraries.activityKtx
     compileOnly AndroidLibraries.fragmentKtx
@@ -50,7 +48,7 @@ dependencies {
     implementation ThirdLibraries.okIO
     implementation ThirdLibraries.timber
 
-    //不直接引入，需要什么就复制什么。
+    //不直接引入，需要什么就复制什么。注意：跟踪 utilcodex 的更新
     //https://juejin.cn/user/1978776659167981
     //https://github.com/Blankj/AndroidUtilCode
     //compileOnly "com.blankj:utilcodex:1.30.0"
