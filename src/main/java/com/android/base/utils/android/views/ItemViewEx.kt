@@ -6,7 +6,6 @@ import com.android.base.utils.common.ifNonNull
 import com.android.base.utils.common.otherwise
 import timber.log.Timber
 
-/** TODO: configurable behaviors like making crash when [View.getTag] returning a null value. */
 @Suppress("UNCHECKED_CAST")
 fun <T> newOnItemClickListener(listener: (view: View, item: T) -> Unit): View.OnClickListener {
     return View.OnClickListener {
@@ -15,6 +14,18 @@ fun <T> newOnItemClickListener(listener: (view: View, item: T) -> Unit): View.On
         } otherwise {
             Timber.e("the view $it has not tag set.")
         }
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T> newOnItemLongClickListener(listener: (view: View, item: T) -> Unit): View.OnLongClickListener {
+    return View.OnLongClickListener {
+        (it.tag as? T).ifNonNull {
+            listener(it, this)
+        } otherwise {
+            Timber.e("the view $it has not tag set.")
+        }
+        true
     }
 }
 
