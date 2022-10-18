@@ -49,9 +49,9 @@ public class ClipboardUtils {
     }
 
     /**
-     * 获取剪贴板的uri
+     * 获取剪贴板的 uri
      *
-     * @return 剪贴板的uri
+     * @return 剪贴板的 uri
      */
     public static Uri getUri() {
         ClipboardManager clipboard = (ClipboardManager) BaseUtils.getAppContext().getSystemService(Context.CLIPBOARD_SERVICE);

@@ -3,7 +3,7 @@ package com.android.base.utils.android
 import android.app.Activity
 import androidx.annotation.AnimRes
 import androidx.appcompat.app.AppCompatActivity
-
+import com.blankj.utilcode.util.AppUtils
 
 fun AppCompatActivity.finishWithAnimation(@AnimRes enterAnim: Int, @AnimRes exitAnim: Int) {
     supportFinishAfterTransition()

@@ -1,4 +1,4 @@
-package com.android.base.utils.android;
+package com.blankj.utilcode.util;
 
 import android.app.Activity;
 import android.app.Application;

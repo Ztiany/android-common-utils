@@ -21,7 +21,7 @@ import android.text.format.Formatter;
 import androidx.annotation.RequiresPermission;
 
 import com.android.base.utils.BaseUtils;
-import com.android.base.utils.android.ShellUtils;
+import com.blankj.utilcode.util.ShellUtils;
 
 import java.lang.reflect.Method;
 import java.net.InetAddress;

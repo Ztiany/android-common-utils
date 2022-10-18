@@ -1,8 +1,10 @@
-package com.android.base.utils.common;
+package com.blankj.utilcode.util;
 
 import android.annotation.SuppressLint;
 
 import androidx.annotation.IntDef;
+
+import com.android.base.utils.common.Strings;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Retention;

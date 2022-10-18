@@ -1,4 +1,4 @@
-package com.android.base.utils.android;
+package com.android.base.utils.android.views;
 
 import android.content.Context;
 import android.os.Build;
@@ -15,22 +15,22 @@ import androidx.annotation.RequiresApi;
  * <pre>
  * 关于内存泄漏：最好的方式还是开启独立的进程
  *
- * 关于Cookie：
+ * 关于 Cookie：
  *
  *          之前同步 cookie 需要用到 CookieSyncManager 类，现在这个类已经被抛弃了。
- *          现在WebView已经可以在需要的时候自动同步 cookie 了，
+ *          现在 WebView 已经可以在需要的时候自动同步 cookie 了，
  *          所以不再需要创建 CookieSyncManager 类的对象来进行强制性的同步 cookie 了。
  *          现在只需要获得 CookieManager 的对象将 cookie 设置进去就可以了。
  *
- *          从服务器的返回头中取出 cookie 根据Http请求的客户端不同，获取 cookie 的方式也不同。比如以HttpURLCollection
+ *          从服务器的返回头中取出 cookie 根据Http请求的客户端不同，获取 cookie 的方式也不同。比如以 HttpURLCollection
  *
  *          <code>
  *               String cookieStr = conn.getHeaderField("Set-Cookie");
  *          </code>
  *
  *          步骤：
- *                   1：利用HttpClient进行api请求登录，然后获取cookie
- *                   2：调用syncCookie分发把cookie写入到WebCookie的数据库中
+ *                   1：利用 HttpClient 进行 api 请求登录，然后获取 cookie
+ *                   2：调用 syncCookie 分发把 cookie 写入到 WebCookie 的数据库中
  * </pre>
  */
 public class WebViewUtils {

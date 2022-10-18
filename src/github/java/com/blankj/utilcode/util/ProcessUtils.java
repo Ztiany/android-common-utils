@@ -1,4 +1,4 @@
-package com.android.base.utils.android;
+package com.blankj.utilcode.util;
 
 import static android.Manifest.permission.KILL_BACKGROUND_PROCESSES;
 

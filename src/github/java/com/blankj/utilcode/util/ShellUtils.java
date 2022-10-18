@@ -1,4 +1,4 @@
-package com.android.base.utils.android;
+package com.blankj.utilcode.util;
 
 import androidx.annotation.NonNull;
 

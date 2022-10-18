@@ -7,7 +7,7 @@ import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
 import com.android.base.utils.android.AppLifecycleExKt;
-import com.android.base.utils.android.AppUtils;
+import com.blankj.utilcode.util.AppUtils;
 import com.android.base.utils.android.network.NetworkStateKt;
 
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -38,6 +38,5 @@ inline fun <T> List<T>.findFrom(startIndex: Int = 0, predicate: (T) -> Boolean):
         element = get(i)
         if (predicate(element)) return element
     }
-
     return null
 }

@@ -27,6 +27,12 @@ android {
         jvmTarget = "1.8"
     }
 
+    sourceSets {
+        main {
+            java.srcDirs += "src/github/java"
+            res.srcDirs += "src/github/res"
+        }
+    }
 }
 
 dependencies {
@@ -49,7 +55,5 @@ dependencies {
     implementation ThirdLibraries.timber
 
     //不直接引入，需要什么就复制什么。注意：跟踪 utilcodex 的更新
-    //https://juejin.cn/user/1978776659167981
-    //https://github.com/Blankj/AndroidUtilCode
     //compileOnly "com.blankj:utilcodex:1.30.0"
 }

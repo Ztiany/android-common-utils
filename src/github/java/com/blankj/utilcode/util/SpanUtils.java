@@ -1,4 +1,4 @@
-package com.android.base.utils.android.text;
+package com.blankj.utilcode.util;
 
 import static android.graphics.BlurMaskFilter.Blur;
 

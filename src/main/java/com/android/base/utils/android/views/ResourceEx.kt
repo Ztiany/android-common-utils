@@ -15,8 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.android.base.utils.BaseUtils
-import com.android.base.utils.android.AppUtils
-import java.security.AccessController.getContext
 
 inline fun <T : TypedArray?, R> T.use(block: (T) -> R): R {
     var recycled = false

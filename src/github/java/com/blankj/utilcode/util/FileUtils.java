@@ -1,4 +1,4 @@
-package com.android.base.utils.common;
+package com.blankj.utilcode.util;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -9,6 +9,9 @@ import android.os.StatFs;
 import android.text.TextUtils;
 
 import com.android.base.utils.BaseUtils;
+import com.android.base.utils.common.Strings;
+import com.blankj.utilcode.util.ConvertUtils;
+import com.blankj.utilcode.util.FileIOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;

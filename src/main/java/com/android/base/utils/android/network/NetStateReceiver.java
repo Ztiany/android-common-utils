@@ -22,14 +22,13 @@ import timber.log.Timber;
 
 /**
  * 网络监听，需要权限：
+ *
  * <pre>{@code
  *      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
  * }
  * </pre>
  *
  * @author Ztiany
- * email 1169654504@qq.com
- * date 2015-12-08 14:50
  * @see <a href="http://www.jianshu.com/p/983889116526">Android：检测网络状态 & 监听网络变化</a>
  */
 public abstract class NetStateReceiver extends BroadcastReceiver {
@@ -50,10 +49,10 @@ public abstract class NetStateReceiver extends BroadcastReceiver {
 
         if (null != state_wifi && State.CONNECTED == state_wifi) { // 判断是否正在使用WIFI网络
             tempStatus = STATE_WIFI;
-            Timber.d("mStatus=" + mStatus + "改变后的网络为WIFI");
+            Timber.d("mStatus=" + mStatus + "改变后的网络为 WIFI");
         } else if (null != state_gprs && State.CONNECTED == state_gprs) { // 判断是否正在使用GPRS网络
             tempStatus = STATE_GPRS;
-            Timber.d("mStatus=" + mStatus + "改变后的网络为GPRS");
+            Timber.d("mStatus=" + mStatus + "改变后的网络为 GPRS");
         } else {
             tempStatus = STATE_NONE;
             Timber.d("mStatus=" + mStatus + "改变后的网络为无连接");
@@ -81,15 +80,17 @@ public abstract class NetStateReceiver extends BroadcastReceiver {
             //获取所有网络连接的信息
             Network[] networks = connManager.getAllNetworks();
             NetworkInfo networkInfo;
+            int index = 1;
             for (Network network : networks) {
                 //获取ConnectivityManager对象对应的NetworkInfo对象
                 networkInfo = connManager.getNetworkInfo(network);
                 if (networkInfo == null) {
                     continue;
                 }
-                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                Timber.d("api 23 network-" + index++ + " = " + networkInfo + " type = " + networkInfo.getType());
+                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI && networkInfo.isConnected()) {
                     state_wifi = networkInfo.getState();
-                } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE && networkInfo.isConnected()) {
                     state_gprs = networkInfo.getState();
                 }
                 if (state_wifi != null && state_gprs != null) {
@@ -109,12 +110,12 @@ public abstract class NetStateReceiver extends BroadcastReceiver {
             try {
                 state_wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState(); // 获取网络连接状态
             } catch (Exception e) {
-                Timber.d("测试机没有WIFI模块");
+                Timber.d("测试机没有 WIFI 模块");
             }
             try {
                 state_gprs = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState(); // 获取网络连接状态
             } catch (Exception e) {
-                Timber.d("测试机没有GPRS模块");
+                Timber.d("测试机没有 GPRS 模块");
             }
             Timber.d("api 23 before getState state_wifi = " + state_wifi + " state_gprs = " + state_gprs);
         }

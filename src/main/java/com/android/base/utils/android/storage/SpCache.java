@@ -6,8 +6,6 @@ import android.text.TextUtils;
 
 import com.android.base.utils.BaseUtils;
 
-import java.lang.reflect.Method;
-
 import timber.log.Timber;
 
 /**
@@ -92,7 +90,7 @@ public class SpCache {
     private SpCache _remove(String key) {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.remove(key);
-        SharedPreferencesCompat.apply(editor, mUseApply);
+        apply(editor, mUseApply);
         return this;
     }
 
@@ -104,7 +102,7 @@ public class SpCache {
     private SpCache _clear() {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.clear();
-        SharedPreferencesCompat.apply(editor, mUseApply);
+        apply(editor, mUseApply);
         return this;
     }
 
@@ -124,8 +122,16 @@ public class SpCache {
             Timber.d("you may be put a invalid object :%s", t.toString());
             editor.putString(key, t.toString());
         }
-        SharedPreferencesCompat.apply(editor, mUseApply);
+        apply(editor, mUseApply);
         return this;
+    }
+
+    private void apply(SharedPreferences.Editor editor, boolean useApply) {
+        if (useApply) {
+            editor.apply();
+        } else {
+            editor.commit();
+        }
     }
 
 
@@ -153,49 +159,12 @@ public class SpCache {
         return readDisk(key, defaultVal);
     }
 
-    /**
-     * 创建一个解决SharedPreferencesCompat.apply方法的一个兼容类
-     *
-     * @author zhy
-     */
-    private static class SharedPreferencesCompat {
-        private static final Method sApplyMethod = findApplyMethod();
-
-        /**
-         * 反射查找apply的方法
-         */
-        @SuppressWarnings({"unchecked", "rawtypes"})
-        private static Method findApplyMethod() {
-            try {
-                Class clz = SharedPreferences.Editor.class;
-                return clz.getMethod("apply");
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        /**
-         * 如果找到则使用apply执行，否则使用commit
-         */
-        public static void apply(final SharedPreferences.Editor editor, boolean useApply) {
-            if (useApply) {
-                try {
-                    if (sApplyMethod != null) {
-                        sApplyMethod.invoke(editor);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    editor.commit();
-                }
-            } else {
-                editor.commit();
-            }
-        }
-    }
-
     private SharedPreferences getSharedPreferences() {
         return mSharedPreferences;
+    }
+
+    public SharedPreferences.Editor edit() {
+        return getSharedPreferences().edit();
     }
 
     public void registerOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {

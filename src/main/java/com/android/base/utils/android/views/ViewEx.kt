@@ -10,10 +10,10 @@ import android.view.View.OnLayoutChangeListener
 import androidx.annotation.IdRes
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.FragmentActivity
-import com.android.base.utils.android.ScreenUtils
 import com.android.base.utils.android.compat.AndroidVersion.atLeast
 import com.android.base.utils.common.otherwise
 import com.android.base.utils.common.yes
+import com.blankj.utilcode.util.ScreenUtils
 
 fun View.visibleOrGone(visible: Boolean) {
     if (visible) {

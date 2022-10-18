@@ -8,7 +8,6 @@ import com.android.base.utils.common.makeParentPath
 import java.io.File
 import java.io.FileOutputStream
 
-
 fun Bitmap.saveToFile(format: Bitmap.CompressFormat, @IntRange(from = 1, to = 100) quality: Int, savePath: String): Boolean {
     return try {
         val file = File(savePath)

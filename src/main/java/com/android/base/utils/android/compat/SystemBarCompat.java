@@ -28,7 +28,7 @@ import com.android.base.utils.R;
 import timber.log.Timber;
 
 /**
- * A tool for adjusting system bars.[TODO: using WindowInsets API instead.]
+ * A tool for adjusting system bars.
  *
  * <p>
  * other useful libs:
@@ -53,6 +53,7 @@ import timber.log.Timber;
  * @author Ztiany
  * Date :   2016-03-16 21:52
  */
+//[TODO: using WindowInsets API instead].
 public class SystemBarCompat {
 
     private SystemBarCompat() {

@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.ViewGroupUtils
 
 /**
- * for more information refer to [LayoutDSL](https://github.com/wisdomtl/Layout_DSL/blob/master/app/src/main/java/taylor/com/dsl/Layout.kt).
+ * For more information refer to [LayoutDSL](https://github.com/wisdomtl/Layout_DSL/blob/master/app/src/main/java/taylor/com/dsl/Layout.kt).
  */
 @SuppressLint("RestrictedApi")
 fun View.expand(dx: Int, dy: Int) {
@@ -28,7 +28,6 @@ fun View.expand(dx: Int, dy: Int) {
         rect.inset(-dx, -dy)
         (parentView.touchDelegate as? MultiTouchDelegate)?.delegateViewMap?.put(this, rect)
     }
-
 }
 
 private class MultiTouchDelegate(

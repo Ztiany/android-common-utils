@@ -1,6 +1,8 @@
-package com.android.base.utils.common;
+package com.blankj.utilcode.util;
 
 import android.util.Log;
+
+import com.android.base.utils.common.Strings;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

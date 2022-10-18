@@ -1,6 +1,5 @@
 package com.android.base.utils.android.compat
 
-
 inline fun ifSDKAbove(sdkVersion: Int, block: () -> Unit) {
     if (AndroidVersion.above(sdkVersion)) {
         block()

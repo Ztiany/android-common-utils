@@ -26,6 +26,4 @@ internal class TimingDelegate(
         return returnValue
     }
 
-
-
 }

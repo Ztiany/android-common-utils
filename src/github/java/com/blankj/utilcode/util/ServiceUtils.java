@@ -1,4 +1,4 @@
-package com.android.base.utils.android;
+package com.blankj.utilcode.util;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
