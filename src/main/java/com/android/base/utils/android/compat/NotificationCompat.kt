@@ -12,7 +12,7 @@ import com.android.base.utils.common.invoke
 private const val REQUEST_CODE = 20099
 
 /**
- * reference:
+ * References:
  *
  * - [android-toast-doesnt-show-up](https://stackoverflow.com/questions/53703013/android-toast-doesnt-show-up)
  * - [disabling-notifications-also-disables-toast-on-oreo](https://stackoverflow.com/questions/50742586/disabling-notifications-also-disables-toast-on-oreo)
