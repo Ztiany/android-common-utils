@@ -72,21 +72,21 @@ public class SystemBarCompat {
     /**
      * 让布局延伸至状态栏与导览区域，将状态栏和导航栏的颜色设置为透明色。
      */
-    public static void setDecorFitsSystemWindows(@NonNull Activity activity) {
-        setDecorFitsSystemWindowsInternal(activity, true, true);
+    public static void setExtendsToSystemBar(@NonNull Activity activity, boolean extend) {
+        extendToSystemBarInternally(activity, extend, extend);
     }
 
-    public static void setDecorFitsSystemWindows(@NonNull Activity activity, boolean status, boolean navigation) {
-        setDecorFitsSystemWindowsInternal(activity, status, navigation);
+    public static void setExtendsToSystemBar(@NonNull Activity activity, boolean status, boolean navigation) {
+        extendToSystemBarInternally(activity, status, navigation);
     }
 
-    public static void setDecorFitsSystemWindowsOnlyFor19(@NonNull Activity activity, boolean status, boolean navigation) {
+    public static void setExtendsToSystemBarOnlyFor19(@NonNull Activity activity, boolean status, boolean navigation) {
         if (AndroidVersion.at(19)) {
             setTranslucentSystemBar(activity.getWindow(), status, navigation);
         }
     }
 
-    private static void setDecorFitsSystemWindowsInternal(@NonNull Activity activity, boolean status, boolean navigation) {
+    private static void extendToSystemBarInternally(@NonNull Activity activity, boolean status, boolean navigation) {
         Window window = activity.getWindow();
         if (AndroidVersion.atLeast(30) && (status == navigation)) {
 
