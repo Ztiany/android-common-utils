@@ -213,7 +213,7 @@ public class SystemBarCompat {
          */
         WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
         if (windowInsets != null) {
-            statusBarHeight = windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars()).top;
+            statusBarHeight = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
         }
         return statusBarHeight;
     }
@@ -232,7 +232,7 @@ public class SystemBarCompat {
         if (statusBarHeight <= 0) {
             WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
             if (windowInsets != null) {
-                statusBarHeight = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+                statusBarHeight = windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars()).top;
             }
         }
 
@@ -246,7 +246,7 @@ public class SystemBarCompat {
         int navigationBarHeight = 0;
         WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
         if (windowInsets != null) {
-            navigationBarHeight = windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()).bottom;
+            navigationBarHeight = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
         }
         return navigationBarHeight;
     }
@@ -266,7 +266,7 @@ public class SystemBarCompat {
         if (navigationBarHeight <= 0) {
             WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
             if (windowInsets != null) {
-                navigationBarHeight = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+                navigationBarHeight = windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()).bottom;
             }
         }
 
