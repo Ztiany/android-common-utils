@@ -80,6 +80,7 @@ public class SystemBarCompat {
         extendToSystemBarInternally(activity, status, navigation);
     }
 
+    @Deprecated
     public static void setExtendsToSystemBarOnlyFor19(@NonNull Activity activity, boolean status, boolean navigation) {
         if (AndroidVersion.at(19)) {
             setTranslucentSystemBar(activity.getWindow(), status, navigation);
@@ -166,6 +167,7 @@ public class SystemBarCompat {
         window.setNavigationBarColor(color);
     }
 
+    @Deprecated
     private static View setStatusBarColorOn19(@NonNull Activity activity, @ColorInt int color) {
         ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         return setupStatusBarViewOn19(activity, decorView, color);
