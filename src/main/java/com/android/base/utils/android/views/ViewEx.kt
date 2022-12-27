@@ -31,14 +31,29 @@ fun View.visibleOrInvisible(visible: Boolean) {
     }
 }
 
+fun View.setVisible() {
+    this.visibility = View.VISIBLE
+}
+
+fun View.setInvisible() {
+    this.visibility = View.INVISIBLE
+}
+
+fun View.setGone() {
+    this.visibility = View.GONE
+}
+
+@Deprecated(message = "use setVisible instead", replaceWith = ReplaceWith("setVisible()"))
 fun View.visible() {
     this.visibility = View.VISIBLE
 }
 
+@Deprecated(message = "use setInvisible instead", replaceWith = ReplaceWith("setInvisible()"))
 fun View.invisible() {
     this.visibility = View.INVISIBLE
 }
 
+@Deprecated(message = "use setGone instead", replaceWith = ReplaceWith("setGone()"))
 fun View.gone() {
     this.visibility = View.GONE
 }
@@ -311,7 +326,7 @@ inline val ViewGroup.views get() = (0 until childCount).map { getChildAt(it) }
 
 fun View.measureSelf(): Boolean {
     val layoutParams = layoutParams
-    if (layoutParams == null || layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT && layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT) {
+    if (layoutParams == null || (layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT && layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT)) {
         return false
     }
     val size = 1 shl 30 - 1//即后 30 位
@@ -322,7 +337,7 @@ fun View.measureSelf(): Boolean {
 
 fun View.measureSelfWithScreenSize(): Boolean {
     val layoutParams = layoutParams
-    if (layoutParams == null || layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT && layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT) {
+    if (layoutParams == null || (layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT && layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT)) {
         return false
     }
     measure(
@@ -334,7 +349,7 @@ fun View.measureSelfWithScreenSize(): Boolean {
 
 fun View.measureSelf(width: Int, height: Int): Boolean {
     val layoutParams = layoutParams
-    if (layoutParams == null || layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT && layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT) {
+    if (layoutParams == null || (layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT && layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT)) {
         return false
     }
     measure(
@@ -345,7 +360,7 @@ fun View.measureSelf(width: Int, height: Int): Boolean {
 }
 
 @SuppressLint("ObsoleteSdkInt")
-fun View.setBgDrawable(drawable: Drawable) {
+fun View.setBackgroundDrawableCompat(drawable: Drawable) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
         background = drawable
     } else {
@@ -358,7 +373,7 @@ fun <V : View> View.find(@IdRes viewId: Int): V {
     return findViewById<View>(viewId) as V
 }
 
-fun View.inflater(): LayoutInflater = LayoutInflater.from(context)
+fun View.inflater(): LayoutInflater = LayoutInflater.from(realContext)
 
 private const val ACTION_VISIBLE = 0x01
 private const val ACTION_GONE = 0x02
@@ -366,90 +381,90 @@ private const val ACTION_INVISIBLE = 0x03
 private const val ACTION_DISABLE = 0x04
 private const val ACTION_ENABLE = 0x05
 
-fun disable(view1: View, view2: View) {
+fun disableViews(view1: View, view2: View) {
     view1.isEnabled = false
     view2.isEnabled = false
 }
 
-fun disable(view1: View, view2: View, view3: View) {
+fun disableViews(view1: View, view2: View, view3: View) {
     view1.isEnabled = false
     view2.isEnabled = false
     view3.isEnabled = false
 }
 
-fun disable(view1: View, view2: View, view3: View, vararg views: View) {
+fun disableViews(view1: View, view2: View, view3: View, vararg views: View) {
     view1.isEnabled = false
     view2.isEnabled = false
     view3.isEnabled = false
     doAction(ACTION_DISABLE, *views)
 }
 
-fun enable(view1: View, view2: View) {
+fun enableViews(view1: View, view2: View) {
     view1.isEnabled = true
     view2.isEnabled = true
 }
 
-fun enable(view1: View, view2: View, view3: View) {
+fun enableViews(view1: View, view2: View, view3: View) {
     view1.isEnabled = true
     view2.isEnabled = true
     view3.isEnabled = true
 }
 
-fun enable(view1: View, view2: View, view3: View, vararg views: View) {
+fun enableViews(view1: View, view2: View, view3: View, vararg views: View) {
     view1.isEnabled = true
     view2.isEnabled = true
     view3.isEnabled = true
     doAction(ACTION_ENABLE, *views)
 }
 
-fun gone(view1: View, view2: View) {
+fun goneViews(view1: View, view2: View) {
     view1.visibility = View.GONE
     view2.visibility = View.GONE
 }
 
-fun gone(view1: View, view2: View, view3: View) {
+fun goneViews(view1: View, view2: View, view3: View) {
     view1.visibility = View.GONE
     view2.visibility = View.GONE
     view3.visibility = View.GONE
 }
 
-fun gone(view1: View, view2: View, view3: View, vararg views: View) {
+fun goneViews(view1: View, view2: View, view3: View, vararg views: View) {
     view1.visibility = View.GONE
     view2.visibility = View.GONE
     view3.visibility = View.GONE
     doAction(ACTION_GONE, *views)
 }
 
-fun visible(view1: View, view2: View) {
+fun visibleViews(view1: View, view2: View) {
     view1.visibility = View.VISIBLE
     view2.visibility = View.VISIBLE
 }
 
-fun visible(view1: View, view2: View, view3: View) {
+fun visibleViews(view1: View, view2: View, view3: View) {
     view1.visibility = View.VISIBLE
     view2.visibility = View.VISIBLE
     view3.visibility = View.VISIBLE
 }
 
-fun visible(view1: View, view2: View, view3: View, vararg views: View) {
+fun visibleViews(view1: View, view2: View, view3: View, vararg views: View) {
     view1.visibility = View.VISIBLE
     view2.visibility = View.VISIBLE
     view3.visibility = View.VISIBLE
     doAction(ACTION_VISIBLE, *views)
 }
 
-fun invisible(view1: View, view2: View) {
+fun invisibleViews(view1: View, view2: View) {
     view1.visibility = View.INVISIBLE
     view2.visibility = View.INVISIBLE
 }
 
-fun invisible(view1: View, view2: View, view3: View) {
+fun invisibleViews(view1: View, view2: View, view3: View) {
     view1.visibility = View.INVISIBLE
     view2.visibility = View.INVISIBLE
     view3.visibility = View.INVISIBLE
 }
 
-fun invisible(view1: View, view2: View, view3: View, vararg views: View) {
+fun invisibleViews(view1: View, view2: View, view3: View, vararg views: View) {
     view1.visibility = View.INVISIBLE
     view2.visibility = View.INVISIBLE
     view3.visibility = View.INVISIBLE
@@ -468,7 +483,7 @@ private fun doAction(action: Int, vararg views: View) {
     }
 }
 
-fun View.removeFromTree() {
+fun View.removeSelfFromTree() {
     val viewParent = parent
     if (viewParent != null && viewParent is ViewGroup) {
         viewParent.removeView(this)
