@@ -14,7 +14,7 @@ import androidx.coordinatorlayout.widget.ViewGroupUtils
  * For more information refer to [LayoutDSL](https://github.com/wisdomtl/Layout_DSL/blob/master/app/src/main/java/taylor/com/dsl/Layout.kt).
  */
 @SuppressLint("RestrictedApi")
-fun View.expand(dx: Int, dy: Int) {
+fun View.expandTouchArea(dx: Int, dy: Int) {
 
     val parentView = (parent as? ViewGroup) ?: return
 
