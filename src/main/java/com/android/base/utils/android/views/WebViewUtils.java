@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 /**
- * 关于内存泄漏，最好的方式还是开启独立的进程。
+ * 关于 WebView 的内存泄漏，最好的方式还是开启独立的进程。
  */
 public class WebViewUtils {
 

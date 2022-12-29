@@ -18,6 +18,23 @@ fun <T> newOnItemClickListener(listener: (view: View, item: T) -> Unit): View.On
 }
 
 @Suppress("UNCHECKED_CAST")
+fun <T> newDebouncedOnItemClickListener(
+    milliseconds: Long = AntiShakeUtil.sClickInterval,
+    listener: (view: View, item: T) -> Unit
+): View.OnClickListener {
+    return View.OnClickListener {
+        if (!AntiShakeUtil.isInvalidClick(it, milliseconds)) {
+            return@OnClickListener
+        }
+        (it.tag as? T).ifNonNull {
+            listener(it, this)
+        } otherwise {
+            Timber.e("the view $it has not tag set.")
+        }
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
 fun <T> newOnItemLongClickListener(listener: (view: View, item: T) -> Unit): View.OnLongClickListener {
     return View.OnLongClickListener {
         (it.tag as? T).ifNonNull {

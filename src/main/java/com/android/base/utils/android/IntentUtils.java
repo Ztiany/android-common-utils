@@ -22,14 +22,9 @@ import timber.log.Timber;
 
 public class IntentUtils {
 
-    public static final String GOOGLE_PLAY_PACKAGE_NAME = "com.android.vending";
-    public static final String WANDOUJIA_PACKAGE_NAME = "com.wandoujia.phoenix2";
-    public static final String TENCENT_PACKAGE_NAME = "com.tencent.android.qqdownloader";
-
     /**
-     * 打开应用市场
+     * 打开应用市场。
      *
-     * @param context 上下文
      * @return 是否成功
      */
     public static boolean openMarket(Context context) {
@@ -46,19 +41,17 @@ public class IntentUtils {
     }
 
     /**
-     * 优先打开规定的应用市场
+     * 优先打开规定的应用市场。
      *
-     * @param context         上下文
-     * @param specificMarkets 你规定的能打开app的包名,优先打开规定的包名
      * @return true表示打开成功
      */
-    public static boolean openSpecificMarket(Context context, String... specificMarkets) {
+    public static boolean openSpecificMarket(Context context, String... marketAppPackageNames) {
         String appId = context.getPackageName();
         Intent rateIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appId));
         boolean marketFound = false;
         // find all applications able to handle our rateIntent
         final List<ResolveInfo> otherApps = context.getPackageManager().queryIntentActivities(rateIntent, 0);
-        List<String> specifiedPackage = Arrays.asList(specificMarkets);
+        List<String> specifiedPackage = Arrays.asList(marketAppPackageNames);
         for (ResolveInfo otherApp : otherApps) {
             // look for Google Play application
             if (specifiedPackage.contains(otherApp.activityInfo.applicationInfo.packageName)) {
@@ -83,7 +76,9 @@ public class IntentUtils {
     }
 
     /**
-     * @param email   email email必须放到数组中
+     * 发送邮件。
+     *
+     * @param email   email（email 必须放到数组中）
      * @param subject 主题
      * @param text    发送的内容
      */
@@ -107,7 +102,7 @@ public class IntentUtils {
     }
 
     /**
-     * 参考：https://developer.android.com/guide/topics/providers/calendar-provider.html?hl=zh-cn#intent-insert
+     * 插入日历事件。
      *
      * @param context       上下文
      * @param beginTime     开始时间
@@ -115,20 +110,13 @@ public class IntentUtils {
      * @param title         标题
      * @param description   描述
      * @param eventLocation 位置
-     * @param emails        extra 字段提供以逗号分隔的受邀者电子邮件地址列表。
+     * @param emails        extra 字段提供以逗号分隔的受邀者电子邮件地址列表
      * @return 是否添加成功
+     * @see <a href='https://developer.android.com/guide/topics/providers/calendar-provider.html?hl=zh-cn#intent-insert'>使用 Intent 插入事件。</a>
      */
     public static boolean insertEvent(Context context, Calendar beginTime, Calendar endTime, String title, String description, String eventLocation, @Nullable String emails) {
         emails = TextUtils.isEmpty(emails) ? "" : emails;
-        Intent intent = new Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis())
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
-                .putExtra(CalendarContract.Events.TITLE, title)
-                .putExtra(CalendarContract.Events.DESCRIPTION, description)
-                .putExtra(CalendarContract.Events.EVENT_LOCATION, eventLocation)
-                .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY)
-                .putExtra(Intent.EXTRA_EMAIL, emails);
+        Intent intent = new Intent(Intent.ACTION_INSERT).setData(CalendarContract.Events.CONTENT_URI).putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis()).putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis()).putExtra(CalendarContract.Events.TITLE, title).putExtra(CalendarContract.Events.DESCRIPTION, description).putExtra(CalendarContract.Events.EVENT_LOCATION, eventLocation).putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY).putExtra(Intent.EXTRA_EMAIL, emails);
         ComponentName componentName = intent.resolveActivity(context.getPackageManager());
         if (componentName != null) {
             context.startActivity(intent);
@@ -140,7 +128,7 @@ public class IntentUtils {
     }
 
     /**
-     * 打开网络设置界面
+     * 打开网络设置界面。
      */
     public static boolean openNetworkSettings(Context context) {
         try {
@@ -154,7 +142,7 @@ public class IntentUtils {
     }
 
     /**
-     * 打开系统设置界面
+     * 打开系统设置界面。
      */
     public static boolean openSystemSettings(Context context) {
         try {
@@ -168,10 +156,11 @@ public class IntentUtils {
     }
 
     /**
-     * 通知系统有图片保存了
+     * 通知系统有图片保存了。
+     *
+     * @see <a href='https://juejin.im/post/5ae0541df265da0b9d77e45a'>三种方法，刷新 Android 的 MediaStore！让你保存的图片立即出现在相册里！</a>
      */
     public static void notifyImageSaved(Context context, String path) {
-        //https://juejin.im/post/5ae0541df265da0b9d77e45a
         try {
             MediaStore.Images.Media.insertImage(context.getContentResolver(), path, "", "");
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + path)));

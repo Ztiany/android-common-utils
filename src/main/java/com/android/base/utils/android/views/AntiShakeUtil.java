@@ -9,7 +9,7 @@ import com.android.base.utils.R;
 
 public class AntiShakeUtil {
 
-    private final static long INTERNAL_TIME = 500;
+    static long sClickInterval = 500;
 
     /**
      * Whether this click event is invalid.
@@ -19,7 +19,7 @@ public class AntiShakeUtil {
      * @see #isInvalidClick(View, long)
      */
     public static boolean isInvalidClick(@NonNull View target) {
-        return isInvalidClick(target, INTERNAL_TIME);
+        return isInvalidClick(target, sClickInterval);
     }
 
     /**
@@ -31,7 +31,7 @@ public class AntiShakeUtil {
      */
     public static boolean isInvalidClick(@NonNull View target, @IntRange(from = 0) long internalTime) {
         long curTimeStamp = System.currentTimeMillis();
-        long lastClickTimeStamp = 0;
+        long lastClickTimeStamp;
         Object o = target.getTag(R.id.base_last_click_timestamp);
         if (o == null) {
             target.setTag(R.id.base_last_click_timestamp, curTimeStamp);
@@ -44,6 +44,10 @@ public class AntiShakeUtil {
         }
 
         return isInvalid;
+    }
+
+    public static void setClickInterval(long clickInterval) {
+        sClickInterval = clickInterval;
     }
 
 }

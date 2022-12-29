@@ -5,10 +5,9 @@ package com.android.base.utils.common
 import java.io.Closeable
 import java.io.IOException
 
-/** 参考： [Boolean扩展](https://blog.kotliner.cn/2017/06/19/interesting-booleanext/) */
 sealed class Ext<out T> constructor(val boolean: Boolean)
 
-/** 如果该对象不是null，则执行action */
+/** 如果该对象不是 null，则执行 action。 */
 fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
     if (this != null) {
         return WithData(action())
@@ -16,7 +15,7 @@ fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
     return Otherwise
 }
 
-/** 如果该对象是null，则执行action */
+/** 如果该对象是 null，则执行 action。 */
 fun <T, E> T?.ifNull(action: () -> E) {
     if (this == null) {
         action()
@@ -41,7 +40,6 @@ object Otherwise : Ext<Nothing>(true)
 
 class WithData<out T>(val data: T) : Ext<T>(false)
 
-/**除此以外*/
 inline infix fun <T> Ext<T>.otherwise(block: () -> T): T {
     return when (this) {
         is Otherwise -> block()

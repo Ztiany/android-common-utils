@@ -16,12 +16,12 @@ fun tintBitmap(inBitmap: Bitmap, tintColor: Int): Bitmap {
     return outBitmap
 }
 
-fun tint(originDrawable: Drawable, color: Int): Drawable {
-    return tint(originDrawable, ColorStateList.valueOf(color))
+fun tintDrawable(originDrawable: Drawable, color: Int): Drawable {
+    return tintDrawable(originDrawable, ColorStateList.valueOf(color))
 }
 
-fun tint(originDrawable: Drawable, color: Int, tintMode: PorterDuff.Mode? = null): Drawable {
-    return tint(originDrawable, ColorStateList.valueOf(color), tintMode)
+fun tintDrawable(originDrawable: Drawable, color: Int, tintMode: PorterDuff.Mode? = null): Drawable {
+    return tintDrawable(originDrawable, ColorStateList.valueOf(color), tintMode)
 }
 
 /**
@@ -48,7 +48,7 @@ fun tint(originDrawable: Drawable, color: Int, tintMode: PorterDuff.Mode? = null
  * ```
  */
 @JvmOverloads
-fun tint(originDrawable: Drawable, colorStateList: ColorStateList, tintMode: PorterDuff.Mode? = null): Drawable {
+fun tintDrawable(originDrawable: Drawable, colorStateList: ColorStateList, tintMode: PorterDuff.Mode? = null): Drawable {
     val tintDrawable = DrawableCompat.wrap(originDrawable)
     if (tintMode != null) {
         DrawableCompat.setTintMode(tintDrawable, tintMode)

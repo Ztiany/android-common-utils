@@ -24,12 +24,13 @@ import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.Cipher;
 
 /**
+ * RSA 非对称加密。
+ *
  * @see <a href='https://android-developers.googleblog.com/2018/03/cryptography-changes-in-android-p.html'>cryptography-changes-in-android-p.html<a/>
  * @see <a href='https://www.jianshu.com/p/7841eae98d16'>Android使用RSA加密和解密cryptography-changes-in-android-p.html<a/>
  * @see <a href='https://stackoverflow.com/questions/12471999/rsa-encryption-decryption-in-android/12474193'>rsa-encryption-decryption-in-android/12474193<a/>
  * @see <a href='https://proandroiddev.com/secure-data-in-android-encrypting-large-data-dda256a55b36'>secure-data-in-android-encrypting-large-data-dda256a55b36<a/>
  */
-@SuppressWarnings("WeakerAccess,unused")
 public final class RSAUtils {
 
     private final static String KEY_PAIR = "RSA";
@@ -56,7 +57,7 @@ public final class RSAUtils {
     /**
      * 用公钥加密，每次加密的字节数，不能超过密钥的长度值减去 11。
      *
-     * @param data      需加密数据的byte数据
+     * @param data      需加密数据的 byte 数据
      * @param publicKey 公钥
      * @return 加密后的byte型数据
      */
@@ -77,7 +78,7 @@ public final class RSAUtils {
     /**
      * 用私钥解密
      *
-     * @param encryptedData 经过 encryptedData() 加密返回的 byte 数据
+     * @param encryptedData 经过 encryptedData() 加密返回的 byte 数据。
      * @param privateKey    私钥
      */
     @Nullable
@@ -94,7 +95,7 @@ public final class RSAUtils {
     /**
      * 用公钥解密
      *
-     * @param encryptedData 经过 encryptedData() 加密返回的 byte 数据
+     * @param encryptedData 经过 encryptedData() 加密返回的 byte 数据。
      * @param publicKey     公钥
      */
     @Nullable
@@ -114,14 +115,14 @@ public final class RSAUtils {
     ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * 随机生成 RSA 密钥对(默认密钥长度为 1024)
+     * 随机生成 RSA 密钥对（默认密钥长度为 1024）。
      */
     public static KeyPair generateRSAKeyPair() {
         return generateRSAKeyPair(1024);
     }
 
     /**
-     * 随机生成 RSA 密钥对
+     * 随机生成 RSA 密钥对。
      *
      * @param keyLength 密钥长度，范围：512～2048，一般1024
      */
@@ -165,7 +166,7 @@ public final class RSAUtils {
     }
 
     /**
-     * 使用 N、e 值还原公钥
+     * 使用 N、e 值还原公钥。
      *
      * @throws NoSuchAlgorithmException NoSuchAlgorithm
      * @throws InvalidKeySpecException  InvalidKeySpec
@@ -179,7 +180,7 @@ public final class RSAUtils {
     }
 
     /**
-     * 使用 N、d 值还原私钥
+     * 使用 N、d 值还原私钥。
      *
      * @throws NoSuchAlgorithmException NoSuchAlgorithm
      * @throws InvalidKeySpecException  InvalidKeySpec
@@ -193,7 +194,7 @@ public final class RSAUtils {
     }
 
     /**
-     * 从字符串中加载公钥
+     * 从字符串中加载公钥。
      *
      * @param publicKeyStr Base64 编码的公钥数据字符串
      * @throws Exception 加载公钥时产生的异常
@@ -215,7 +216,7 @@ public final class RSAUtils {
     }
 
     /**
-     * 从字符串中加载私钥，加载时使用的是 PKCS8EncodedKeySpec（PKCS#8编码的Key指令）。
+     * 从字符串中加载私钥，加载时使用的是 PKCS8EncodedKeySpec（PKCS#8 编码的 Key 指令）。
      *
      * @param privateKeyStr Base64 编码的私钥数据字符串
      */
@@ -236,7 +237,7 @@ public final class RSAUtils {
     }
 
     /**
-     * 从文件中输入流中加载公钥
+     * 从文件中输入流中加载公钥。
      *
      * @param in 公钥输入流
      * @throws Exception 加载公钥时产生的异常
@@ -252,7 +253,7 @@ public final class RSAUtils {
     }
 
     /**
-     * 从文件中加载私钥
+     * 从文件中加载私钥。
      */
     public static PrivateKey loadPrivateKey(InputStream in) throws Exception {
         try {
@@ -265,7 +266,7 @@ public final class RSAUtils {
     }
 
     /**
-     * 读取密钥信息
+     * 读取密钥信息。
      *
      * <pre>
      * --------------------

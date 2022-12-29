@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
  * </pre>
  *
  * @author Ztiany
- * Email: ztiany3@gmail.com
  * @see <a href='https://juejin.im/entry/5c63821a6fb9a049a81fd075'>聊聊Android中的字体适配</a>
  */
 public class TextSizeAdaptation {

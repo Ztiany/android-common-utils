@@ -29,8 +29,7 @@ public class SoftKeyboardUtils {
     public static boolean showSoftInput(Activity activity) {
         View view = activity.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(
-                    Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             return imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
         }
         return false;

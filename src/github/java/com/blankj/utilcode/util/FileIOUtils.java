@@ -2,8 +2,6 @@ package com.blankj.utilcode.util;
 
 import android.util.Log;
 
-import com.android.base.utils.common.Strings;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -27,11 +25,11 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * @see <a href='https://github.com/Blankj/AndroidUtilCode/blob/master/lib/utilcode/src/main/java/com/blankj/utilcode/util/FileIOUtils.java'>AndroidUtilCode's FileIOUtils</a>
  */
 public final class FileIOUtils {
+
 
     private static int sBufferSize = 524288;
 
@@ -51,7 +49,7 @@ public final class FileIOUtils {
      * @return {@code true}: success<br>{@code false}: fail
      */
     public static boolean writeFileFromIS(final String filePath, final InputStream is) {
-        return writeFileFromIS(FileUtils.getFileByPath(filePath), is, false, null);
+        return writeFileFromIS(UtilsBridge.getFileByPath(filePath), is, false, null);
     }
 
     /**
@@ -65,7 +63,7 @@ public final class FileIOUtils {
     public static boolean writeFileFromIS(final String filePath,
                                           final InputStream is,
                                           final boolean append) {
-        return writeFileFromIS(FileUtils.getFileByPath(filePath), is, append, null);
+        return writeFileFromIS(UtilsBridge.getFileByPath(filePath), is, append, null);
     }
 
     /**
@@ -108,7 +106,7 @@ public final class FileIOUtils {
     public static boolean writeFileFromIS(final String filePath,
                                           final InputStream is,
                                           final OnProgressUpdateListener listener) {
-        return writeFileFromIS(FileUtils.getFileByPath(filePath), is, false, listener);
+        return writeFileFromIS(UtilsBridge.getFileByPath(filePath), is, false, listener);
     }
 
     /**
@@ -124,7 +122,7 @@ public final class FileIOUtils {
                                           final InputStream is,
                                           final boolean append,
                                           final OnProgressUpdateListener listener) {
-        return writeFileFromIS(FileUtils.getFileByPath(filePath), is, append, listener);
+        return writeFileFromIS(UtilsBridge.getFileByPath(filePath), is, append, listener);
     }
 
     /**
@@ -154,7 +152,7 @@ public final class FileIOUtils {
                                           final InputStream is,
                                           final boolean append,
                                           final OnProgressUpdateListener listener) {
-        if (is == null || !FileUtils.createOrExistsFile(file)) {
+        if (is == null || !UtilsBridge.createOrExistsFile(file)) {
             Log.e("FileIOUtils", "create file <" + file + "> failed.");
             return false;
         }
@@ -210,7 +208,7 @@ public final class FileIOUtils {
      * @return {@code true}: success<br>{@code false}: fail
      */
     public static boolean writeFileFromBytesByStream(final String filePath, final byte[] bytes) {
-        return writeFileFromBytesByStream(FileUtils.getFileByPath(filePath), bytes, false, null);
+        return writeFileFromBytesByStream(UtilsBridge.getFileByPath(filePath), bytes, false, null);
     }
 
     /**
@@ -224,7 +222,7 @@ public final class FileIOUtils {
     public static boolean writeFileFromBytesByStream(final String filePath,
                                                      final byte[] bytes,
                                                      final boolean append) {
-        return writeFileFromBytesByStream(FileUtils.getFileByPath(filePath), bytes, append, null);
+        return writeFileFromBytesByStream(UtilsBridge.getFileByPath(filePath), bytes, append, null);
     }
 
     /**
@@ -267,7 +265,7 @@ public final class FileIOUtils {
     public static boolean writeFileFromBytesByStream(final String filePath,
                                                      final byte[] bytes,
                                                      final OnProgressUpdateListener listener) {
-        return writeFileFromBytesByStream(FileUtils.getFileByPath(filePath), bytes, false, listener);
+        return writeFileFromBytesByStream(UtilsBridge.getFileByPath(filePath), bytes, false, listener);
     }
 
     /**
@@ -283,7 +281,7 @@ public final class FileIOUtils {
                                                      final byte[] bytes,
                                                      final boolean append,
                                                      final OnProgressUpdateListener listener) {
-        return writeFileFromBytesByStream(FileUtils.getFileByPath(filePath), bytes, append, listener);
+        return writeFileFromBytesByStream(UtilsBridge.getFileByPath(filePath), bytes, append, listener);
     }
 
     /**
@@ -328,7 +326,7 @@ public final class FileIOUtils {
     public static boolean writeFileFromBytesByChannel(final String filePath,
                                                       final byte[] bytes,
                                                       final boolean isForce) {
-        return writeFileFromBytesByChannel(FileUtils.getFileByPath(filePath), bytes, false, isForce);
+        return writeFileFromBytesByChannel(UtilsBridge.getFileByPath(filePath), bytes, false, isForce);
     }
 
     /**
@@ -344,7 +342,7 @@ public final class FileIOUtils {
                                                       final byte[] bytes,
                                                       final boolean append,
                                                       final boolean isForce) {
-        return writeFileFromBytesByChannel(FileUtils.getFileByPath(filePath), bytes, append, isForce);
+        return writeFileFromBytesByChannel(UtilsBridge.getFileByPath(filePath), bytes, append, isForce);
     }
 
     /**
@@ -378,7 +376,7 @@ public final class FileIOUtils {
             Log.e("FileIOUtils", "bytes is null.");
             return false;
         }
-        if (!FileUtils.createOrExistsFile(file)) {
+        if (!UtilsBridge.createOrExistsFile(file)) {
             Log.e("FileIOUtils", "create file <" + file + "> failed.");
             return false;
         }
@@ -434,7 +432,7 @@ public final class FileIOUtils {
                                                   final byte[] bytes,
                                                   final boolean append,
                                                   final boolean isForce) {
-        return writeFileFromBytesByMap(FileUtils.getFileByPath(filePath), bytes, append, isForce);
+        return writeFileFromBytesByMap(UtilsBridge.getFileByPath(filePath), bytes, append, isForce);
     }
 
     /**
@@ -464,7 +462,7 @@ public final class FileIOUtils {
                                                   final byte[] bytes,
                                                   final boolean append,
                                                   final boolean isForce) {
-        if (bytes == null || !FileUtils.createOrExistsFile(file)) {
+        if (bytes == null || !UtilsBridge.createOrExistsFile(file)) {
             Log.e("FileIOUtils", "create file <" + file + "> failed.");
             return false;
         }
@@ -501,7 +499,7 @@ public final class FileIOUtils {
      * @return {@code true}: success<br>{@code false}: fail
      */
     public static boolean writeFileFromString(final String filePath, final String content) {
-        return writeFileFromString(FileUtils.getFileByPath(filePath), content, false);
+        return writeFileFromString(UtilsBridge.getFileByPath(filePath), content, false);
     }
 
     /**
@@ -515,7 +513,7 @@ public final class FileIOUtils {
     public static boolean writeFileFromString(final String filePath,
                                               final String content,
                                               final boolean append) {
-        return writeFileFromString(FileUtils.getFileByPath(filePath), content, append);
+        return writeFileFromString(UtilsBridge.getFileByPath(filePath), content, append);
     }
 
     /**
@@ -541,7 +539,7 @@ public final class FileIOUtils {
                                               final String content,
                                               final boolean append) {
         if (file == null || content == null) return false;
-        if (!FileUtils.createOrExistsFile(file)) {
+        if (!UtilsBridge.createOrExistsFile(file)) {
             Log.e("FileIOUtils", "create file <" + file + "> failed.");
             return false;
         }
@@ -575,7 +573,7 @@ public final class FileIOUtils {
      * @return the lines in file
      */
     public static List<String> readFile2List(final String filePath) {
-        return readFile2List(FileUtils.getFileByPath(filePath), null);
+        return readFile2List(UtilsBridge.getFileByPath(filePath), null);
     }
 
     /**
@@ -586,7 +584,7 @@ public final class FileIOUtils {
      * @return the lines in file
      */
     public static List<String> readFile2List(final String filePath, final String charsetName) {
-        return readFile2List(FileUtils.getFileByPath(filePath), charsetName);
+        return readFile2List(UtilsBridge.getFileByPath(filePath), charsetName);
     }
 
     /**
@@ -619,7 +617,7 @@ public final class FileIOUtils {
      * @return the lines in file
      */
     public static List<String> readFile2List(final String filePath, final int st, final int end) {
-        return readFile2List(FileUtils.getFileByPath(filePath), st, end, null);
+        return readFile2List(UtilsBridge.getFileByPath(filePath), st, end, null);
     }
 
     /**
@@ -635,7 +633,7 @@ public final class FileIOUtils {
                                              final int st,
                                              final int end,
                                              final String charsetName) {
-        return readFile2List(FileUtils.getFileByPath(filePath), st, end, charsetName);
+        return readFile2List(UtilsBridge.getFileByPath(filePath), st, end, charsetName);
     }
 
     /**
@@ -663,14 +661,14 @@ public final class FileIOUtils {
                                              final int st,
                                              final int end,
                                              final String charsetName) {
-        if (!FileUtils.isFileExists(file)) return null;
+        if (!UtilsBridge.isFileExists(file)) return null;
         if (st > end) return null;
         BufferedReader reader = null;
         try {
             String line;
             int curLine = 1;
             List<String> list = new ArrayList<>();
-            if (Strings.isSpace(charsetName)) {
+            if (UtilsBridge.isSpace(charsetName)) {
                 reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             } else {
                 reader = new BufferedReader(
@@ -704,7 +702,7 @@ public final class FileIOUtils {
      * @return the string in file
      */
     public static String readFile2String(final String filePath) {
-        return readFile2String(FileUtils.getFileByPath(filePath), null);
+        return readFile2String(UtilsBridge.getFileByPath(filePath), null);
     }
 
     /**
@@ -715,7 +713,7 @@ public final class FileIOUtils {
      * @return the string in file
      */
     public static String readFile2String(final String filePath, final String charsetName) {
-        return readFile2String(FileUtils.getFileByPath(filePath), charsetName);
+        return readFile2String(UtilsBridge.getFileByPath(filePath), charsetName);
     }
 
     /**
@@ -738,7 +736,7 @@ public final class FileIOUtils {
     public static String readFile2String(final File file, final String charsetName) {
         byte[] bytes = readFile2BytesByStream(file);
         if (bytes == null) return null;
-        if (Strings.isSpace(charsetName)) {
+        if (UtilsBridge.isSpace(charsetName)) {
             return new String(bytes);
         } else {
             try {
@@ -761,7 +759,7 @@ public final class FileIOUtils {
      * @return the bytes in file
      */
     public static byte[] readFile2BytesByStream(final String filePath) {
-        return readFile2BytesByStream(FileUtils.getFileByPath(filePath), null);
+        return readFile2BytesByStream(UtilsBridge.getFileByPath(filePath), null);
     }
 
     /**
@@ -787,7 +785,7 @@ public final class FileIOUtils {
      */
     public static byte[] readFile2BytesByStream(final String filePath,
                                                 final OnProgressUpdateListener listener) {
-        return readFile2BytesByStream(FileUtils.getFileByPath(filePath), listener);
+        return readFile2BytesByStream(UtilsBridge.getFileByPath(filePath), listener);
     }
 
     /**
@@ -799,7 +797,7 @@ public final class FileIOUtils {
      */
     public static byte[] readFile2BytesByStream(final File file,
                                                 final OnProgressUpdateListener listener) {
-        if (!FileUtils.isFileExists(file)) return null;
+        if (!UtilsBridge.isFileExists(file)) return null;
         try {
             ByteArrayOutputStream os = null;
             InputStream is = new BufferedInputStream(new FileInputStream(file), sBufferSize);
@@ -852,7 +850,7 @@ public final class FileIOUtils {
      * @return the bytes in file
      */
     public static byte[] readFile2BytesByChannel(final String filePath) {
-        return readFile2BytesByChannel(FileUtils.getFileByPath(filePath));
+        return readFile2BytesByChannel(UtilsBridge.getFileByPath(filePath));
     }
 
     /**
@@ -862,7 +860,7 @@ public final class FileIOUtils {
      * @return the bytes in file
      */
     public static byte[] readFile2BytesByChannel(final File file) {
-        if (!FileUtils.isFileExists(file)) return null;
+        if (!UtilsBridge.isFileExists(file)) return null;
         FileChannel fc = null;
         try {
             fc = new RandomAccessFile(file, "r").getChannel();
@@ -896,7 +894,7 @@ public final class FileIOUtils {
      * @return the bytes in file
      */
     public static byte[] readFile2BytesByMap(final String filePath) {
-        return readFile2BytesByMap(FileUtils.getFileByPath(filePath));
+        return readFile2BytesByMap(UtilsBridge.getFileByPath(filePath));
     }
 
     /**
@@ -906,7 +904,7 @@ public final class FileIOUtils {
      * @return the bytes in file
      */
     public static byte[] readFile2BytesByMap(final File file) {
-        if (!FileUtils.isFileExists(file)) return null;
+        if (!UtilsBridge.isFileExists(file)) return null;
         FileChannel fc = null;
         try {
             fc = new RandomAccessFile(file, "r").getChannel();

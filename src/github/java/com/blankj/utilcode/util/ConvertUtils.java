@@ -1,33 +1,36 @@
 package com.blankj.utilcode.util;
 
-import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import androidx.annotation.IntDef;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import com.android.base.utils.common.Strings;
-
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @see <a href='https://github.com/Blankj/AndroidUtilCode/blob/master/lib/utilcode/src/main/java/com/blankj/utilcode/util/ConvertUtils.java'>AndroidUtilCode's ConvertUtils</a>
  */
 public final class ConvertUtils {
 
-    public static final int BYTE = 1;
-    public static final int KB = 1024;
-    public static final int MB = 1048576;
-    public static final int GB = 1073741824;
-
-    @IntDef({BYTE, KB, MB, GB})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Unit {
-    }
-
-    private static final char[] HEX_DIGITS_UPPER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-    private static final char[] HEX_DIGITS_LOWER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private static final int    BUFFER_SIZE      = 8192;
+    private static final char[] HEX_DIGITS_UPPER =
+            {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] HEX_DIGITS_LOWER =
+            {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     private ConvertUtils() {
         throw new UnsupportedOperationException("u can't instantiate me...");
@@ -169,7 +172,7 @@ public final class ConvertUtils {
      * @return the bytes
      */
     public static byte[] hexString2Bytes(String hexString) {
-        if (Strings.isSpace(hexString)) return new byte[0];
+        if (UtilsBridge.isSpace(hexString)) return new byte[0];
         int len = hexString.length();
         if (len % 2 != 0) {
             hexString = "0" + hexString;
@@ -234,82 +237,288 @@ public final class ConvertUtils {
     }
 
     /**
-     * Size of memory in unit to size of byte.
-     *
-     * @param memorySize Size of memory.
-     * @param unit       The unit of memory size.
-     *                   <ul>
-     *                   <li>{@link ConvertUtils#BYTE}</li>
-     *                   <li>{@link ConvertUtils#KB}</li>
-     *                   <li>{@link ConvertUtils#MB}</li>
-     *                   <li>{@link ConvertUtils#GB}</li>
-     *                   </ul>
-     * @return size of byte
+     * Bytes to JSONObject.
      */
-    public static long memorySize2Byte(final long memorySize, @Unit final int unit) {
-        if (memorySize < 0) return -1;
-        return memorySize * unit;
-    }
-
-    /**
-     * Size of byte to size of memory in unit.
-     *
-     * @param byteSize Size of byte.
-     * @param unit     The unit of memory size.
-     *                 <ul>
-     *                 <li>{@link ConvertUtils#BYTE}</li>
-     *                 <li>{@link ConvertUtils#KB}</li>
-     *                 <li>{@link ConvertUtils#MB}</li>
-     *                 <li>{@link ConvertUtils#GB}</li>
-     *                 </ul>
-     * @return size of memory in unit
-     */
-    public static double byte2MemorySize(final long byteSize, @Unit final int unit) {
-        if (byteSize < 0) return -1;
-        return (double) byteSize / unit;
-    }
-
-    /**
-     * Size of byte to fit size of memory.
-     * <p>to three decimal places</p>
-     *
-     * @param byteSize Size of byte.
-     * @return fit size of memory
-     */
-    @SuppressLint("DefaultLocale")
-    public static String byte2FitMemorySize(final long byteSize) {
-        return byte2FitMemorySize(byteSize, 3);
-    }
-
-    /**
-     * Size of byte to fit size of memory.
-     * <p>to three decimal places</p>
-     *
-     * @param byteSize  Size of byte.
-     * @param precision The precision
-     * @return fit size of memory
-     */
-    @SuppressLint("DefaultLocale")
-    public static String byte2FitMemorySize(final long byteSize, int precision) {
-        if (precision < 0) {
-            throw new IllegalArgumentException("precision shouldn't be less than zero!");
+    public static JSONObject bytes2JSONObject(final byte[] bytes) {
+        if (bytes == null) return null;
+        try {
+            return new JSONObject(new String(bytes));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        if (byteSize < 0) {
-            throw new IllegalArgumentException("byteSize shouldn't be less than zero!");
-        } else if (byteSize < KB) {
-            return String.format("%." + precision + "fB", (double) byteSize);
-        } else if (byteSize < MB) {
-            return String.format("%." + precision + "fKB", (double) byteSize / KB);
-        } else if (byteSize < GB) {
-            return String.format("%." + precision + "fMB", (double) byteSize / MB);
-        } else {
-            return String.format("%." + precision + "fGB", (double) byteSize / GB);
+    }
+
+    /**
+     * JSONObject to bytes.
+     */
+    public static byte[] jsonObject2Bytes(final JSONObject jsonObject) {
+        if (jsonObject == null) return null;
+        return jsonObject.toString().getBytes();
+    }
+
+    /**
+     * Bytes to JSONArray.
+     */
+    public static JSONArray bytes2JSONArray(final byte[] bytes) {
+        if (bytes == null) return null;
+        try {
+            return new JSONArray(new String(bytes));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * JSONArray to bytes.
+     */
+    public static byte[] jsonArray2Bytes(final JSONArray jsonArray) {
+        if (jsonArray == null) return null;
+        return jsonArray.toString().getBytes();
+    }
+
+    /**
+     * Bytes to Parcelable
+     */
+    public static <T> T bytes2Parcelable(final byte[] bytes,
+                                         final Parcelable.Creator<T> creator) {
+        if (bytes == null) return null;
+        Parcel parcel = Parcel.obtain();
+        parcel.unmarshall(bytes, 0, bytes.length);
+        parcel.setDataPosition(0);
+        T result = creator.createFromParcel(parcel);
+        parcel.recycle();
+        return result;
+    }
+
+    /**
+     * Parcelable to bytes.
+     */
+    public static byte[] parcelable2Bytes(final Parcelable parcelable) {
+        if (parcelable == null) return null;
+        Parcel parcel = Parcel.obtain();
+        parcelable.writeToParcel(parcel, 0);
+        byte[] bytes = parcel.marshall();
+        parcel.recycle();
+        return bytes;
+    }
+
+    /**
+     * Bytes to Serializable.
+     */
+    public static Object bytes2Object(final byte[] bytes) {
+        if (bytes == null) return null;
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
+            return ois.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Serializable to bytes.
+     */
+    public static byte[] serializable2Bytes(final Serializable serializable) {
+        if (serializable == null) return null;
+        ByteArrayOutputStream baos;
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(baos = new ByteArrayOutputStream());
+            oos.writeObject(serializable);
+            return baos.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Input stream to output stream.
+     */
+    public static ByteArrayOutputStream input2OutputStream(final InputStream is) {
+        if (is == null) return null;
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            byte[] b = new byte[BUFFER_SIZE];
+            int len;
+            while ((len = is.read(b, 0, BUFFER_SIZE)) != -1) {
+                os.write(b, 0, len);
+            }
+            return os;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Output stream to input stream.
+     */
+    public static ByteArrayInputStream output2InputStream(final OutputStream out) {
+        if (out == null) return null;
+        return new ByteArrayInputStream(((ByteArrayOutputStream) out).toByteArray());
+    }
+
+    /**
+     * Input stream to bytes.
+     */
+    public static byte[] inputStream2Bytes(final InputStream is) {
+        if (is == null) return null;
+        return input2OutputStream(is).toByteArray();
+    }
+
+    /**
+     * Bytes to input stream.
+     */
+    public static InputStream bytes2InputStream(final byte[] bytes) {
+        if (bytes == null || bytes.length <= 0) return null;
+        return new ByteArrayInputStream(bytes);
+    }
+
+    /**
+     * Output stream to bytes.
+     */
+    public static byte[] outputStream2Bytes(final OutputStream out) {
+        if (out == null) return null;
+        return ((ByteArrayOutputStream) out).toByteArray();
+    }
+
+    /**
+     * Bytes to output stream.
+     */
+    public static OutputStream bytes2OutputStream(final byte[] bytes) {
+        if (bytes == null || bytes.length <= 0) return null;
+        ByteArrayOutputStream os = null;
+        try {
+            os = new ByteArrayOutputStream();
+            os.write(bytes);
+            return os;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (os != null) {
+                    os.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Input stream to string.
+     */
+    public static String inputStream2String(final InputStream is, final String charsetName) {
+        if (is == null) return "";
+        try {
+            ByteArrayOutputStream baos = input2OutputStream(is);
+            if (baos == null) return "";
+            return baos.toString(getSafeCharset(charsetName));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * String to input stream.
+     */
+    public static InputStream string2InputStream(final String string, final String charsetName) {
+        if (string == null) return null;
+        try {
+            return new ByteArrayInputStream(string.getBytes(getSafeCharset(charsetName)));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Output stream to string.
+     */
+    public static String outputStream2String(final OutputStream out, final String charsetName) {
+        if (out == null) return "";
+        try {
+            return new String(outputStream2Bytes(out), getSafeCharset(charsetName));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * String to output stream.
+     */
+    public static OutputStream string2OutputStream(final String string, final String charsetName) {
+        if (string == null) return null;
+        try {
+            return bytes2OutputStream(string.getBytes(getSafeCharset(charsetName)));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<String> inputStream2Lines(final InputStream is) {
+        return inputStream2Lines(is, "");
+    }
+
+    public static List<String> inputStream2Lines(final InputStream is,
+                                                 final String charsetName) {
+        BufferedReader reader = null;
+        try {
+            List<String> list = new ArrayList<>();
+            reader = new BufferedReader(new InputStreamReader(is, getSafeCharset(charsetName)));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                list.add(line);
+            }
+            return list;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private static String getSafeCharset(String charsetName) {
         String cn = charsetName;
-        if (Strings.isSpace(charsetName) || !Charset.isSupported(charsetName)) {
+        if (UtilsBridge.isSpace(charsetName) || !Charset.isSupported(charsetName)) {
             cn = "UTF-8";
         }
         return cn;

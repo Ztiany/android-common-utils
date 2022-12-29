@@ -31,29 +31,29 @@ fun View.visibleOrInvisible(visible: Boolean) {
     }
 }
 
-fun View.setVisible() {
+fun View.beVisible() {
     this.visibility = View.VISIBLE
 }
 
-fun View.setInvisible() {
+fun View.beInvisible() {
     this.visibility = View.INVISIBLE
 }
 
-fun View.setGone() {
+fun View.beGone() {
     this.visibility = View.GONE
 }
 
-@Deprecated(message = "use setVisible instead", replaceWith = ReplaceWith("setVisible()"))
+@Deprecated(message = "use setVisible instead", replaceWith = ReplaceWith("beVisible()"))
 fun View.visible() {
     this.visibility = View.VISIBLE
 }
 
-@Deprecated(message = "use setInvisible instead", replaceWith = ReplaceWith("setInvisible()"))
+@Deprecated(message = "use setInvisible instead", replaceWith = ReplaceWith("beInvisible()"))
 fun View.invisible() {
     this.visibility = View.INVISIBLE
 }
 
-@Deprecated(message = "use setGone instead", replaceWith = ReplaceWith("setGone()"))
+@Deprecated(message = "use setGone instead", replaceWith = ReplaceWith("beGone()"))
 fun View.gone() {
     this.visibility = View.GONE
 }
@@ -417,54 +417,54 @@ fun enableViews(view1: View, view2: View, view3: View, vararg views: View) {
     doAction(ACTION_ENABLE, *views)
 }
 
-fun goneViews(view1: View, view2: View) {
+fun setViewsGone(view1: View, view2: View) {
     view1.visibility = View.GONE
     view2.visibility = View.GONE
 }
 
-fun goneViews(view1: View, view2: View, view3: View) {
+fun setViewsGone(view1: View, view2: View, view3: View) {
     view1.visibility = View.GONE
     view2.visibility = View.GONE
     view3.visibility = View.GONE
 }
 
-fun goneViews(view1: View, view2: View, view3: View, vararg views: View) {
+fun setViewsGone(view1: View, view2: View, view3: View, vararg views: View) {
     view1.visibility = View.GONE
     view2.visibility = View.GONE
     view3.visibility = View.GONE
     doAction(ACTION_GONE, *views)
 }
 
-fun visibleViews(view1: View, view2: View) {
+fun setViewsVisible(view1: View, view2: View) {
     view1.visibility = View.VISIBLE
     view2.visibility = View.VISIBLE
 }
 
-fun visibleViews(view1: View, view2: View, view3: View) {
+fun setViewsVisible(view1: View, view2: View, view3: View) {
     view1.visibility = View.VISIBLE
     view2.visibility = View.VISIBLE
     view3.visibility = View.VISIBLE
 }
 
-fun visibleViews(view1: View, view2: View, view3: View, vararg views: View) {
+fun setViewsVisible(view1: View, view2: View, view3: View, vararg views: View) {
     view1.visibility = View.VISIBLE
     view2.visibility = View.VISIBLE
     view3.visibility = View.VISIBLE
     doAction(ACTION_VISIBLE, *views)
 }
 
-fun invisibleViews(view1: View, view2: View) {
+fun setViewsInvisible(view1: View, view2: View) {
     view1.visibility = View.INVISIBLE
     view2.visibility = View.INVISIBLE
 }
 
-fun invisibleViews(view1: View, view2: View, view3: View) {
+fun setViewsInvisible(view1: View, view2: View, view3: View) {
     view1.visibility = View.INVISIBLE
     view2.visibility = View.INVISIBLE
     view3.visibility = View.INVISIBLE
 }
 
-fun invisibleViews(view1: View, view2: View, view3: View, vararg views: View) {
+fun setViewsInvisible(view1: View, view2: View, view3: View, vararg views: View) {
     view1.visibility = View.INVISIBLE
     view2.visibility = View.INVISIBLE
     view3.visibility = View.INVISIBLE

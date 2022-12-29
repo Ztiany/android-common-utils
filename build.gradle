@@ -28,10 +28,10 @@ android {
     }
 
     sourceSets {
-        main {
+        /*main {
             java.srcDirs += "src/github/java"
             res.srcDirs += "src/github/res"
-        }
+        }*/
     }
 }
 
@@ -51,9 +51,7 @@ dependencies {
     compileOnly KotlinLibraries.kotlinAndroidCoroutines
 
     //Utils
+    api "com.blankj:utilcodex:1.31.1"
     implementation ThirdLibraries.okIO
     implementation ThirdLibraries.timber
-
-    //不直接引入，需要什么就复制什么。注意：跟踪 utilcodex 的更新
-    //compileOnly "com.blankj:utilcodex:1.30.0"
 }

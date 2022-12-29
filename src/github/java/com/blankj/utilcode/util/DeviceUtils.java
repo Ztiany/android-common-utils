@@ -23,11 +23,15 @@ import androidx.annotation.RequiresPermission;
 
 import com.android.base.utils.BaseUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.UUID;
 
 /**
  * @see <a href='https://github.com/Blankj/AndroidUtilCode/blob/master/lib/utilcode/src/main/java/com/blankj/utilcode/util/DeviceUtils.java'>AndroidUtilCode's DeviceUtils</a>
@@ -35,7 +39,7 @@ import java.util.Enumeration;
 public class DeviceUtils {
 
     private DeviceUtils() {
-        throw new UnsupportedOperationException("no need instantiation");
+        throw new UnsupportedOperationException("u can't instantiate me...");
     }
 
     /**
@@ -64,7 +68,7 @@ public class DeviceUtils {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static boolean isAdbEnabled() {
         return Settings.Secure.getInt(
-                BaseUtils.getAppContext().getContentResolver(),
+                Utils.getApp().getContentResolver(),
                 Settings.Global.ADB_ENABLED, 0
         ) > 0;
     }
@@ -95,7 +99,7 @@ public class DeviceUtils {
     @SuppressLint("HardwareIds")
     public static String getAndroidID() {
         String id = Settings.Secure.getString(
-                BaseUtils.getAppContext().getContentResolver(),
+                Utils.getApp().getContentResolver(),
                 Settings.Secure.ANDROID_ID
         );
         if ("9774d56d682e549c".equals(id)) return "";
@@ -110,7 +114,7 @@ public class DeviceUtils {
      *
      * @return the MAC address
      */
-    @RequiresPermission(allOf = {ACCESS_WIFI_STATE, INTERNET, CHANGE_WIFI_STATE})
+    @RequiresPermission(allOf = {ACCESS_WIFI_STATE, CHANGE_WIFI_STATE})
     public static String getMacAddress() {
         String macAddress = getMacAddress((String[]) null);
         if (!TextUtils.isEmpty(macAddress) || getWifiEnabled()) return macAddress;
@@ -121,7 +125,7 @@ public class DeviceUtils {
 
     private static boolean getWifiEnabled() {
         @SuppressLint("WifiManagerLeak")
-        WifiManager manager = (WifiManager) BaseUtils.getAppContext().getSystemService(WIFI_SERVICE);
+        WifiManager manager = (WifiManager) Utils.getApp().getSystemService(WIFI_SERVICE);
         if (manager == null) return false;
         return manager.isWifiEnabled();
     }
@@ -135,7 +139,7 @@ public class DeviceUtils {
     @RequiresPermission(CHANGE_WIFI_STATE)
     private static void setWifiEnabled(final boolean enabled) {
         @SuppressLint("WifiManagerLeak")
-        WifiManager manager = (WifiManager) BaseUtils.getAppContext().getSystemService(WIFI_SERVICE);
+        WifiManager manager = (WifiManager) Utils.getApp().getSystemService(WIFI_SERVICE);
         if (manager == null) return;
         if (enabled == manager.isWifiEnabled()) return;
         manager.setWifiEnabled(enabled);
@@ -148,7 +152,7 @@ public class DeviceUtils {
      *
      * @return the MAC address
      */
-    @RequiresPermission(allOf = {ACCESS_WIFI_STATE, INTERNET})
+    @RequiresPermission(allOf = {ACCESS_WIFI_STATE})
     public static String getMacAddress(final String... excepts) {
         String macAddress = getMacAddressByNetworkInterface();
         if (isAddressNotInExcepts(macAddress, excepts)) {
@@ -187,14 +191,15 @@ public class DeviceUtils {
         return true;
     }
 
-    @SuppressLint({"MissingPermission", "HardwareIds"})
+    @RequiresPermission(ACCESS_WIFI_STATE)
     private static String getMacAddressByWifiInfo() {
         try {
-            final WifiManager wifi = (WifiManager) BaseUtils.getAppContext()
+            final WifiManager wifi = (WifiManager) Utils.getApp()
                     .getApplicationContext().getSystemService(WIFI_SERVICE);
             if (wifi != null) {
                 final WifiInfo info = wifi.getConnectionInfo();
                 if (info != null) {
+                    @SuppressLint("HardwareIds")
                     String macAddress = info.getMacAddress();
                     if (!TextUtils.isEmpty(macAddress)) {
                         return macAddress;
@@ -273,11 +278,11 @@ public class DeviceUtils {
     }
 
     private static String getMacAddressByFile() {
-        ShellUtils.CommandResult result = ShellUtils.execCmd("getprop wifi.interface", false);
+        ShellUtils.CommandResult result = UtilsBridge.execCmd("getprop wifi.interface", false);
         if (result.result == 0) {
             String name = result.successMsg;
             if (name != null) {
-                result = ShellUtils.execCmd("cat /sys/class/net/" + name + "/address", false);
+                result = UtilsBridge.execCmd("cat /sys/class/net/" + name + "/address", false);
                 if (result.result == 0) {
                     String address = result.successMsg;
                     if (address != null && address.length() > 0) {
@@ -361,7 +366,7 @@ public class DeviceUtils {
         if (checkProperty) return true;
 
         String operatorName = "";
-        TelephonyManager tm = (TelephonyManager) BaseUtils.getAppContext().getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager tm = (TelephonyManager) Utils.getApp().getSystemService(Context.TELEPHONY_SERVICE);
         if (tm != null) {
             String name = tm.getNetworkOperatorName();
             if (name != null) {
@@ -375,13 +380,63 @@ public class DeviceUtils {
         Intent intent = new Intent();
         intent.setData(Uri.parse(url));
         intent.setAction(Intent.ACTION_DIAL);
-        boolean checkDial = intent.resolveActivity(BaseUtils.getAppContext().getPackageManager()) == null;
+        boolean checkDial = intent.resolveActivity(Utils.getApp().getPackageManager()) == null;
         if (checkDial) return true;
+        if (isEmulatorByCpu()) return true;
 
-        //boolean checkDebuggerConnected = Debug.isDebuggerConnected();
-        //if (checkDebuggerConnected) return true;
+//        boolean checkDebuggerConnected = Debug.isDebuggerConnected();
+//        if (checkDebuggerConnected) return true;
 
         return false;
+    }
+
+    /**
+     * Returns whether is emulator by check cpu info.
+     * by function of {@link #readCpuInfo}, obtain the device cpu information.
+     * then compare whether it is intel or amd (because intel and amd are generally not mobile phone cpu), to determine whether it is a real mobile phone
+     *
+     * @return {@code true}: yes<br>{@code false}: no
+     */
+    private static boolean isEmulatorByCpu() {
+        String cpuInfo = readCpuInfo();
+        return cpuInfo.contains("intel") || cpuInfo.contains("amd");
+    }
+
+    /**
+     * Return Cpu information
+     *
+     * @return Cpu info
+     */
+    private static String readCpuInfo() {
+        String result = "";
+        try {
+            String[] args = {"/system/bin/cat", "/proc/cpuinfo"};
+            ProcessBuilder cmd = new ProcessBuilder(args);
+            Process process = cmd.start();
+            StringBuilder sb = new StringBuilder();
+            String readLine;
+            BufferedReader responseReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "utf-8"));
+            while ((readLine = responseReader.readLine()) != null) {
+                sb.append(readLine);
+            }
+            responseReader.close();
+            result = sb.toString().toLowerCase();
+        } catch (IOException ignored) {
+        }
+        return result;
+    }
+
+    /**
+     * Whether user has enabled development settings.
+     *
+     * @return whether user has enabled development settings.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static boolean isDevelopmentSettingsEnabled() {
+        return Settings.Global.getInt(
+                Utils.getApp().getContentResolver(),
+                Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0
+        ) > 0;
     }
 
 }

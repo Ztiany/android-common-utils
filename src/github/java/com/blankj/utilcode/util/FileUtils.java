@@ -8,11 +8,6 @@ import android.os.Build;
 import android.os.StatFs;
 import android.text.TextUtils;
 
-import com.android.base.utils.BaseUtils;
-import com.android.base.utils.common.Strings;
-import com.blankj.utilcode.util.ConvertUtils;
-import com.blankj.utilcode.util.FileIOUtils;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -49,7 +44,7 @@ public final class FileUtils {
      * @return the file
      */
     public static File getFileByPath(final String filePath) {
-        return Strings.isSpace(filePath) ? null : new File(filePath);
+        return UtilsBridge.isSpace(filePath) ? null : new File(filePath);
     }
 
     /**
@@ -85,7 +80,7 @@ public final class FileUtils {
         if (Build.VERSION.SDK_INT >= 29) {
             try {
                 Uri uri = Uri.parse(filePath);
-                ContentResolver cr = BaseUtils.getAppContext().getContentResolver();
+                ContentResolver cr = Utils.getApp().getContentResolver();
                 AssetFileDescriptor afd = cr.openAssetFileDescriptor(uri, "r");
                 if (afd == null) return false;
                 try {
@@ -124,7 +119,7 @@ public final class FileUtils {
         // file doesn't exist then return false
         if (!file.exists()) return false;
         // the new name is space then return false
-        if (Strings.isSpace(newName)) return false;
+        if (UtilsBridge.isSpace(newName)) return false;
         // the new name equals old name then return true
         if (newName.equals(file.getName())) return true;
         File newFile = new File(file.getParent() + File.separator + newName);
@@ -463,7 +458,8 @@ public final class FileUtils {
         }
         if (!createOrExistsDir(destFile.getParentFile())) return false;
         try {
-            return FileIOUtils.writeFileFromIS(destFile.getAbsolutePath(), new FileInputStream(srcFile)) && !(isMove && !deleteFile(srcFile));
+            return UtilsBridge.writeFileFromIS(destFile.getAbsolutePath(), new FileInputStream(srcFile))
+                    && !(isMove && !deleteFile(srcFile));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
@@ -1091,52 +1087,6 @@ public final class FileUtils {
     }
 
     /**
-     * Return the size.
-     *
-     * @param filePath The path of file.
-     * @return the size
-     */
-    public static String getSize(final String filePath) {
-        return getSize(getFileByPath(filePath));
-    }
-
-    /**
-     * Return the size.
-     *
-     * @param file The directory.
-     * @return the size
-     */
-    public static String getSize(final File file) {
-        if (file == null) return "";
-        if (file.isDirectory()) {
-            return getDirSize(file);
-        }
-        return getFileSize(file);
-    }
-
-    /**
-     * Return the size of directory.
-     *
-     * @param dir The directory.
-     * @return the size of directory
-     */
-    private static String getDirSize(final File dir) {
-        long len = getDirLength(dir);
-        return len == -1 ? "" : ConvertUtils.byte2FitMemorySize(len);
-    }
-
-    /**
-     * Return the size of file.
-     *
-     * @param file The file.
-     * @return the length of file
-     */
-    private static String getFileSize(final File file) {
-        long len = getFileLength(file);
-        return len == -1 ? "" : ConvertUtils.byte2FitMemorySize(len);
-    }
-
-    /**
      * Return the length.
      *
      * @param filePath The path of file.
@@ -1224,7 +1174,7 @@ public final class FileUtils {
      * @return the md5 of file
      */
     public static String getFileMD5ToString(final String filePath) {
-        File file = Strings.isSpace(filePath) ? null : new File(filePath);
+        File file = UtilsBridge.isSpace(filePath) ? null : new File(filePath);
         return getFileMD5ToString(file);
     }
 
@@ -1235,7 +1185,7 @@ public final class FileUtils {
      * @return the md5 of file
      */
     public static String getFileMD5ToString(final File file) {
-        return ConvertUtils.bytes2HexString(getFileMD5(file));
+        return UtilsBridge.bytes2HexString(getFileMD5(file));
     }
 
     /**
@@ -1299,7 +1249,7 @@ public final class FileUtils {
      * @return the file's path of directory
      */
     public static String getDirName(final String filePath) {
-        if (Strings.isSpace(filePath)) return "";
+        if (UtilsBridge.isSpace(filePath)) return "";
         int lastSep = filePath.lastIndexOf(File.separator);
         return lastSep == -1 ? "" : filePath.substring(0, lastSep + 1);
     }
@@ -1322,7 +1272,7 @@ public final class FileUtils {
      * @return the name of file
      */
     public static String getFileName(final String filePath) {
-        if (Strings.isSpace(filePath)) return "";
+        if (UtilsBridge.isSpace(filePath)) return "";
         int lastSep = filePath.lastIndexOf(File.separator);
         return lastSep == -1 ? filePath : filePath.substring(lastSep + 1);
     }
@@ -1345,7 +1295,7 @@ public final class FileUtils {
      * @return the name of file without extension
      */
     public static String getFileNameNoExtension(final String filePath) {
-        if (Strings.isSpace(filePath)) return "";
+        if (UtilsBridge.isSpace(filePath)) return "";
         int lastPoi = filePath.lastIndexOf('.');
         int lastSep = filePath.lastIndexOf(File.separator);
         if (lastSep == -1) {
@@ -1375,7 +1325,7 @@ public final class FileUtils {
      * @return the extension of file
      */
     public static String getFileExtension(final String filePath) {
-        if (Strings.isSpace(filePath)) return "";
+        if (UtilsBridge.isSpace(filePath)) return "";
         int lastPoi = filePath.lastIndexOf('.');
         int lastSep = filePath.lastIndexOf(File.separator);
         if (lastPoi == -1 || lastSep >= lastPoi) return "";
@@ -1400,7 +1350,7 @@ public final class FileUtils {
         if (file == null || !file.exists()) return;
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         intent.setData(Uri.parse("file://" + file.getAbsolutePath()));
-        BaseUtils.getAppContext().sendBroadcast(intent);
+        Utils.getApp().sendBroadcast(intent);
     }
 
     /**
@@ -1452,4 +1402,5 @@ public final class FileUtils {
     public interface OnReplaceListener {
         boolean onReplace(File srcFile, File destFile);
     }
+
 }

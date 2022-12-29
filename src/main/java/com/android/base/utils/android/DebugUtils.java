@@ -11,7 +11,6 @@ import timber.log.Timber;
 
 /**
  * @author Ztiany
- * Email: ztiany3@gmail.com
  */
 public class DebugUtils {
 

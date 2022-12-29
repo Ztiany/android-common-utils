@@ -11,7 +11,6 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * AES 对称加密
  */
-@SuppressWarnings("unused")
 public class AESUtils {
 
     //算法/加密模式/填充模式

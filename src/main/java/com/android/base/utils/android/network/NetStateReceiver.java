@@ -16,6 +16,7 @@ import android.net.NetworkInfo.State;
 import androidx.annotation.NonNull;
 
 import com.android.base.utils.android.compat.AndroidVersion;
+import com.blankj.utilcode.util.NetworkUtils;
 
 import timber.log.Timber;
 

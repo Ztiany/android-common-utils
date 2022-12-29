@@ -1,17 +1,14 @@
 package com.android.base.utils.security;
 
+import androidx.annotation.Nullable;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import androidx.annotation.Nullable;
-
 /**
  * @author Ztiany
- * Email: ztiany3@gmail.com
- * Date : 2019-08-15 14:50
  */
-@SuppressWarnings("WeakerAccess")
 public class SHAUtils {
 
     private static final String SHA256 = "SHA256";

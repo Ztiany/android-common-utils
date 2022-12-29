@@ -1,8 +1,7 @@
 package com.blankj.utilcode.util;
 
-import static android.graphics.BlurMaskFilter.Blur;
-
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BlurMaskFilter;
@@ -17,7 +16,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.Layout;
-import android.text.Layout.Alignment;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -55,8 +53,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import com.android.base.utils.BaseUtils;
-
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.annotation.Retention;
@@ -70,10 +66,10 @@ public final class SpanUtils {
 
     private static final int COLOR_DEFAULT = 0xFEFFFFFF;
 
-    public static final int ALIGN_BOTTOM = 0;
+    public static final int ALIGN_BOTTOM   = 0;
     public static final int ALIGN_BASELINE = 1;
-    public static final int ALIGN_CENTER = 2;
-    public static final int ALIGN_TOP = 3;
+    public static final int ALIGN_CENTER   = 2;
+    public static final int ALIGN_TOP      = 3;
 
     @IntDef({ALIGN_BOTTOM, ALIGN_BASELINE, ALIGN_CENTER, ALIGN_TOP})
     @Retention(RetentionPolicy.SOURCE)
@@ -86,63 +82,62 @@ public final class SpanUtils {
         return new SpanUtils(textView);
     }
 
-    private TextView mTextView;
-    private CharSequence mText;
-    private int flag;
-    private int foregroundColor;
-    private int backgroundColor;
-    private int lineHeight;
-    private int alignLine;
-    private int quoteColor;
-    private int stripeWidth;
-    private int quoteGapWidth;
-    private int first;
-    private int rest;
-    private int bulletColor;
-    private int bulletRadius;
-    private int bulletGapWidth;
-    private int fontSize;
-    private boolean fontSizeIsDp;
-    private float proportion;
-    private float xProportion;
-    private boolean isStrikethrough;
-    private boolean isUnderline;
-    private boolean isSuperscript;
-    private boolean isSubscript;
-    private boolean isBold;
-    private boolean isItalic;
-    private boolean isBoldItalic;
-    private String fontFamily;
+    private TextView      mTextView;
+    private CharSequence  mText;
+    private int           flag;
+    private int           foregroundColor;
+    private int           backgroundColor;
+    private int           lineHeight;
+    private int           alignLine;
+    private int           quoteColor;
+    private int           stripeWidth;
+    private int           quoteGapWidth;
+    private int           first;
+    private int           rest;
+    private int           bulletColor;
+    private int           bulletRadius;
+    private int           bulletGapWidth;
+    private int           fontSize;
+    private float         proportion;
+    private float         xProportion;
+    private boolean       isStrikethrough;
+    private boolean       isUnderline;
+    private boolean       isSuperscript;
+    private boolean       isSubscript;
+    private boolean       isBold;
+    private boolean       isItalic;
+    private boolean       isBoldItalic;
+    private String        fontFamily;
     private Typeface typeface;
-    private Alignment alignment;
-    private int verticalAlign;
+    private Layout.Alignment alignment;
+    private int           verticalAlign;
     private ClickableSpan clickSpan;
-    private String url;
-    private float blurRadius;
-    private Blur style;
+    private String        url;
+    private float         blurRadius;
+    private BlurMaskFilter.Blur style;
     private Shader shader;
-    private float shadowRadius;
-    private float shadowDx;
-    private float shadowDy;
-    private int shadowColor;
-    private Object[] spans;
+    private float         shadowRadius;
+    private float         shadowDx;
+    private float         shadowDy;
+    private int           shadowColor;
+    private Object[]      spans;
 
     private Bitmap imageBitmap;
     private Drawable imageDrawable;
     private Uri imageUri;
-    private int imageResourceId;
-    private int alignImage;
+    private int      imageResourceId;
+    private int      alignImage;
 
     private int spaceSize;
     private int spaceColor;
 
     private SerializableSpannableStringBuilder mBuilder;
-    private boolean isCreated;
+    private boolean                            isCreated;
 
-    private int mType;
+    private       int mType;
     private final int mTypeCharSequence = 0;
-    private final int mTypeImage = 1;
-    private final int mTypeSpace = 2;
+    private final int mTypeImage        = 1;
+    private final int mTypeSpace        = 2;
 
     private SpanUtils(TextView textView) {
         this();
@@ -347,8 +342,12 @@ public final class SpanUtils {
      * @return the single {@link SpanUtils} instance
      */
     public SpanUtils setFontSize(@IntRange(from = 0) final int size, final boolean isSp) {
-        this.fontSize = size;
-        this.fontSizeIsDp = isSp;
+        if (isSp) {
+            final float fontScale = Resources.getSystem().getDisplayMetrics().scaledDensity;
+            this.fontSize = (int) (size * fontScale + 0.5f);
+        } else {
+            this.fontSize = size;
+        }
         return this;
     }
 
@@ -476,13 +475,13 @@ public final class SpanUtils {
      *
      * @param alignment The alignment.
      *                  <ul>
-     *                  <li>{@link Alignment#ALIGN_NORMAL  }</li>
-     *                  <li>{@link Alignment#ALIGN_OPPOSITE}</li>
-     *                  <li>{@link Alignment#ALIGN_CENTER  }</li>
+     *                  <li>{@link Layout.Alignment#ALIGN_NORMAL  }</li>
+     *                  <li>{@link Layout.Alignment#ALIGN_OPPOSITE}</li>
+     *                  <li>{@link Layout.Alignment#ALIGN_CENTER  }</li>
      *                  </ul>
      * @return the single {@link SpanUtils} instance
      */
-    public SpanUtils setHorizontalAlign(@NonNull final Alignment alignment) {
+    public SpanUtils setHorizontalAlign(@NonNull final Layout.Alignment alignment) {
         this.alignment = alignment;
         return this;
     }
@@ -512,9 +511,7 @@ public final class SpanUtils {
      * @return the single {@link SpanUtils} instance
      */
     public SpanUtils setClickSpan(@NonNull final ClickableSpan clickSpan) {
-        if (mTextView != null && mTextView.getMovementMethod() == null) {
-            mTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
+        setMovementMethodIfNeed();
         this.clickSpan = clickSpan;
         return this;
     }
@@ -531,9 +528,7 @@ public final class SpanUtils {
     public SpanUtils setClickSpan(@ColorInt final int color,
                                   final boolean underlineText,
                                   final View.OnClickListener listener) {
-        if (mTextView != null && mTextView.getMovementMethod() == null) {
-            mTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
+        setMovementMethodIfNeed();
         this.clickSpan = new ClickableSpan() {
 
             @Override
@@ -560,11 +555,15 @@ public final class SpanUtils {
      * @return the single {@link SpanUtils} instance
      */
     public SpanUtils setUrl(@NonNull final String url) {
+        setMovementMethodIfNeed();
+        this.url = url;
+        return this;
+    }
+
+    private void setMovementMethodIfNeed() {
         if (mTextView != null && mTextView.getMovementMethod() == null) {
             mTextView.setMovementMethod(LinkMovementMethod.getInstance());
         }
-        this.url = url;
-        return this;
     }
 
     /**
@@ -573,15 +572,15 @@ public final class SpanUtils {
      * @param radius The radius of blur.
      * @param style  The style.
      *               <ul>
-     *               <li>{@link Blur#NORMAL}</li>
-     *               <li>{@link Blur#SOLID}</li>
-     *               <li>{@link Blur#OUTER}</li>
-     *               <li>{@link Blur#INNER}</li>
+     *               <li>{@link BlurMaskFilter.Blur#NORMAL}</li>
+     *               <li>{@link BlurMaskFilter.Blur#SOLID}</li>
+     *               <li>{@link BlurMaskFilter.Blur#OUTER}</li>
+     *               <li>{@link BlurMaskFilter.Blur#INNER}</li>
      *               </ul>
      * @return the single {@link SpanUtils} instance
      */
     public SpanUtils setBlur(@FloatRange(from = 0, fromInclusive = false) final float radius,
-                             final Blur style) {
+                             final BlurMaskFilter.Blur style) {
         this.blurRadius = radius;
         this.style = style;
         return this;
@@ -887,7 +886,7 @@ public final class SpanUtils {
             );
         }
         if (fontSize != -1) {
-            mBuilder.setSpan(new AbsoluteSizeSpan(fontSize, fontSizeIsDp), start, end, flag);
+            mBuilder.setSpan(new AbsoluteSizeSpan(fontSize, false), start, end, flag);
         }
         if (proportion != -1) {
             mBuilder.setSpan(new RelativeSizeSpan(proportion), start, end, flag);
@@ -987,7 +986,7 @@ public final class SpanUtils {
     static class VerticalAlignSpan extends ReplacementSpan {
 
         static final int ALIGN_CENTER = 2;
-        static final int ALIGN_TOP = 3;
+        static final int ALIGN_TOP    = 3;
 
         final int mVerticalAlignment;
 
@@ -1005,29 +1004,6 @@ public final class SpanUtils {
         public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
             text = text.subSequence(start, end);
             Paint.FontMetricsInt fm = paint.getFontMetricsInt();
-//            int need = height - (v + fm.descent - fm.ascent - spanstartv);
-//            if (need > 0) {
-//                if (mVerticalAlignment == ALIGN_TOP) {
-//                    fm.descent += need;
-//                } else if (mVerticalAlignment == ALIGN_CENTER) {
-//                    fm.descent += need / 2;
-//                    fm.ascent -= need / 2;
-//                } else {
-//                    fm.ascent -= need;
-//                }
-//            }
-//            need = height - (v + fm.bottom - fm.top - spanstartv);
-//            if (need > 0) {
-//                if (mVerticalAlignment == ALIGN_TOP) {
-//                    fm.bottom += need;
-//                } else if (mVerticalAlignment == ALIGN_CENTER) {
-//                    fm.bottom += need / 2;
-//                    fm.top -= need / 2;
-//                } else {
-//                    fm.top -= need;
-//                }
-//            }
-
             canvas.drawText(text.toString(), x, y - ((y + fm.descent + y + fm.ascent) / 2 - (bottom + top) / 2), paint);
         }
     }
@@ -1037,9 +1013,9 @@ public final class SpanUtils {
         private final int height;
 
         static final int ALIGN_CENTER = 2;
-        static final int ALIGN_TOP = 3;
+        static final int ALIGN_TOP    = 3;
 
-        final int mVerticalAlignment;
+        final  int                  mVerticalAlignment;
         static Paint.FontMetricsInt sfm;
 
         CustomLineHeightSpan(int height, int verticalAlignment) {
@@ -1096,7 +1072,7 @@ public final class SpanUtils {
 
     static class SpaceSpan extends ReplacementSpan {
 
-        private final int width;
+        private final int   width;
         private final Paint paint = new Paint();
 
         private SpaceSpan(final int width) {
@@ -1254,14 +1230,13 @@ public final class SpanUtils {
     }
 
     static class CustomImageSpan extends CustomDynamicDrawableSpan {
-
         private Drawable mDrawable;
-        private Uri mContentUri;
-        private int mResourceId;
+        private Uri      mContentUri;
+        private int      mResourceId;
 
         private CustomImageSpan(final Bitmap b, final int verticalAlignment) {
             super(verticalAlignment);
-            mDrawable = new BitmapDrawable(BaseUtils.getResources(), b);
+            mDrawable = new BitmapDrawable(Utils.getApp().getResources(), b);
             mDrawable.setBounds(
                     0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight()
             );
@@ -1294,9 +1269,9 @@ public final class SpanUtils {
                 Bitmap bitmap;
                 try {
                     InputStream is =
-                            BaseUtils.getAppContext().getContentResolver().openInputStream(mContentUri);
+                            Utils.getApp().getContentResolver().openInputStream(mContentUri);
                     bitmap = BitmapFactory.decodeStream(is);
-                    drawable = new BitmapDrawable(BaseUtils.getAppContext().getResources(), bitmap);
+                    drawable = new BitmapDrawable(Utils.getApp().getResources(), bitmap);
                     drawable.setBounds(
                             0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight()
                     );
@@ -1308,7 +1283,7 @@ public final class SpanUtils {
                 }
             } else {
                 try {
-                    drawable = ContextCompat.getDrawable(BaseUtils.getAppContext(), mResourceId);
+                    drawable = ContextCompat.getDrawable(Utils.getApp(), mResourceId);
                     drawable.setBounds(
                             0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight()
                     );
@@ -1456,4 +1431,5 @@ public final class SpanUtils {
 
         private static final long serialVersionUID = 4909567650765875771L;
     }
+
 }

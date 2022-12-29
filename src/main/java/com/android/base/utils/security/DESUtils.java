@@ -1,5 +1,7 @@
 package com.android.base.utils.security;
 
+import androidx.annotation.Nullable;
+
 import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
@@ -7,9 +9,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
-import androidx.annotation.Nullable;
-
-@SuppressWarnings("unused")
 public class DESUtils {
 
     /**

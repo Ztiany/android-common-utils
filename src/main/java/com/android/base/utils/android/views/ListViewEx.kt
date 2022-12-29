@@ -7,7 +7,6 @@ import android.widget.ListView
 fun ListView.updateItemView(position: Int, updater: (itemView: View) -> Unit) {
     val firstPos = firstVisiblePosition
     val lastPos = lastVisiblePosition
-    //可见才更新，不可见则在getView()时更新
     if (position in firstPos..lastPos) {
         val view = getChildAt(position - firstPos)
         updater(view)

@@ -3,6 +3,7 @@ package com.android.base.utils.android.network
 import android.app.Application
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import com.blankj.utilcode.util.NetworkUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -15,6 +16,7 @@ enum class NetworkState {
 
 }
 
+
 private val networkStateFlow by lazy {
     MutableStateFlow(
         when {
@@ -25,8 +27,8 @@ private val networkStateFlow by lazy {
     )
 }
 
-/**监听网络状态*/
-fun observableNetworkState(): Flow<NetworkState> {
+/** 监听网络状态。*/
+internal fun observableNetworkState(): Flow<NetworkState> {
     return networkStateFlow
 }
 
@@ -37,7 +39,6 @@ internal fun initNetworkState(application: Application) {
             override fun onNetworkStateChanged(tempStatus: NetworkState) {
                 networkStateFlow.value = tempStatus
             }
-        },
-        IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        }, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
     )
 }

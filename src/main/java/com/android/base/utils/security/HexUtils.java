@@ -2,15 +2,13 @@ package com.android.base.utils.security;
 
 /**
  * @author Ztiany
- * Email: ztiany3@gmail.com
- * Date : 2019-10-23 15:09
  */
 public class HexUtils {
 
     /**
-     * 字节数组转成16进制字符串
+     * 字节数组转成 16 进制字符串。
      *
-     * @return 16进制字符串
+     * @return 16 进制字符串
      */
     public static String byte2hex(byte[] bytes) { // 一个字节的数，
         StringBuilder sb = new StringBuilder(bytes.length * 2);
@@ -27,9 +25,9 @@ public class HexUtils {
     }
 
     /**
-     * 将hex字符串转换成字节数组
+     * 将 hex 字符串转换成字节数组。
      *
-     * @param inputString 16进制的字符串
+     * @param inputString 16 进制的字符串
      * @return 字节数组
      */
     public static byte[] hex2byte(String inputString) {
