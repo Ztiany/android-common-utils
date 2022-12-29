@@ -15,19 +15,19 @@ import com.android.base.utils.common.otherwise
 import com.android.base.utils.common.yes
 import com.blankj.utilcode.util.ScreenUtils
 
-fun View.visibleOrGone(visible: Boolean) {
+fun View.beVisibleOrGone(visible: Boolean) {
     if (visible) {
-        this.visibility = View.VISIBLE
+        beVisible()
     } else {
-        this.visibility = View.GONE
+        beGone()
     }
 }
 
-fun View.visibleOrInvisible(visible: Boolean) {
+fun View.beVisibleOrInvisible(visible: Boolean) {
     if (visible) {
-        this.visibility = View.VISIBLE
+        beVisible()
     } else {
-        this.visibility = View.INVISIBLE
+        beInvisible()
     }
 }
 
