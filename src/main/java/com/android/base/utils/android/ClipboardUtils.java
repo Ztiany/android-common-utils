@@ -10,10 +10,6 @@ import com.android.base.utils.BaseUtils;
 
 public class ClipboardUtils {
 
-    private ClipboardUtils() {
-        throw new UnsupportedOperationException("u can't instantiate me...");
-    }
-
     /**
      * 复制文本到剪贴板。
      */
