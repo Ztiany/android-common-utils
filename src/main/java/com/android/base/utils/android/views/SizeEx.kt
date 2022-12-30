@@ -6,17 +6,20 @@ import android.content.res.Resources
 import android.util.TypedValue
 import kotlin.math.roundToInt
 
-fun dip(value: Int): Int = dpToPx(value)
-fun dip(value: Float): Float = dpToPx(value)
-fun sp(value: Int): Int = spToPx(value)
-fun sp(value: Float): Float = spToPx(value)
-
-fun dpToPx(dp: Float): Float {
+fun dip(dp: Float): Float {
     return dp * getContextResource().displayMetrics.density
 }
 
-fun dpToPx(dp: Int): Int {
+fun dip(dp: Int): Int {
     return (dp * getContextResource().displayMetrics.density).roundToInt()
+}
+
+fun sp(sp: Float): Float {
+    return sp * getContextResource().displayMetrics.scaledDensity
+}
+
+fun sp(sp: Int): Int {
+    return (sp * getContextResource().displayMetrics.scaledDensity).roundToInt()
 }
 
 fun pxToDp(px: Float): Float {
@@ -25,14 +28,6 @@ fun pxToDp(px: Float): Float {
 
 fun pxToDp(px: Int): Int {
     return (px / getContextResource().displayMetrics.density).roundToInt()
-}
-
-fun spToPx(sp: Float): Float {
-    return sp * getContextResource().displayMetrics.scaledDensity
-}
-
-fun spToPx(sp: Int): Int {
-    return (sp * getContextResource().displayMetrics.scaledDensity).roundToInt()
 }
 
 fun pxToSp(px: Float): Float {

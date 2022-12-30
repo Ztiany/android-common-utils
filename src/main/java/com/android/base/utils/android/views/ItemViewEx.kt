@@ -23,7 +23,7 @@ fun <T> newDebouncedOnItemClickListener(
     listener: (view: View, item: T) -> Unit
 ): View.OnClickListener {
     return View.OnClickListener {
-        if (!AntiShakeUtil.isInvalidClick(it, milliseconds)) {
+        if (AntiShakeUtil.isInvalidClick(it, milliseconds)) {
             return@OnClickListener
         }
         (it.tag as? T).ifNonNull {
