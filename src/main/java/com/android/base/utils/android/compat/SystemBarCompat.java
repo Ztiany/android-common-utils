@@ -314,13 +314,19 @@ public class SystemBarCompat {
      * @see <a href='https://developer.android.com/guide/topics/display-cutout?hl=zh-cn'>支持刘海屏</a>
      * @see <a href='https://juejin.im/post/5cf635846fb9a07f0c466ea7'>Android刘海屏、水滴屏全面屏适配方案</a>
      */
-    public static void displayInNotch(@NonNull Activity activity) {
+    public static void displayInNotch(@NonNull Window window) {
         if (AndroidVersion.atLeast(28)) {
-            Window window = activity.getWindow();
             WindowManager.LayoutParams attributes = window.getAttributes();
             attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             window.setAttributes(attributes);
         }
+    }
+
+    /**
+     * @see #displayInNotch(Window)
+     */
+    public static void displayInNotch(@NonNull Activity activity) {
+        displayInNotch(activity.getWindow());
     }
 
 }
