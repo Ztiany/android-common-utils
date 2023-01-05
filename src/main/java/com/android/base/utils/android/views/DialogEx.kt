@@ -1,3 +1,5 @@
+@file:JvmName("DialogEx")
+
 package com.android.base.utils.android.views
 
 import android.app.Dialog
@@ -5,6 +7,11 @@ import androidx.fragment.app.FragmentActivity
 
 fun Dialog.notCancelable(): Dialog {
     this.setCancelable(false)
+    return this
+}
+
+fun Dialog.notCanceledOnTouchOutside(): Dialog {
+    this.setCanceledOnTouchOutside(false)
     return this
 }
 
