@@ -3,6 +3,7 @@ package com.android.base.utils.android.compat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
@@ -221,18 +222,25 @@ public class SystemBarCompat {
     }
 
     /**
-     * 获取状态栏高度
+     * 获取状态栏高度。
      */
     public static int getStatusBarHeightIgnoreVisibility(@NonNull Activity activity) {
+        return getStatusBarHeightIgnoreVisibility(activity, activity.getWindow());
+    }
+
+    /**
+     * 获取状态栏高度。
+     */
+    public static int getStatusBarHeightIgnoreVisibility(@NonNull Context context, @NonNull Window window) {
         int statusBarHeight = 0;
         @SuppressLint("InternalInsetResource")
-        int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            statusBarHeight = activity.getResources().getDimensionPixelSize(resourceId);
+            statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
         }
 
         if (statusBarHeight <= 0) {
-            WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
+            WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(window.getDecorView());
             if (windowInsets != null) {
                 statusBarHeight = windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars()).top;
             }
@@ -254,19 +262,26 @@ public class SystemBarCompat {
     }
 
     /**
-     * 获取 NavigationBar 高度
+     * 获取 NavigationBar 高度。
      */
     public static int getNavigationBarHeightIgnoreVisibility(@NonNull Activity activity) {
+        return getNavigationBarHeightIgnoreVisibility(activity, activity.getWindow());
+    }
+
+    /**
+     * 获取 NavigationBar 高度。
+     */
+    public static int getNavigationBarHeightIgnoreVisibility(@NonNull Context context, @NonNull Window window) {
         int navigationBarHeight = 0;
-        Resources rs = activity.getResources();
+        Resources resources = context.getResources();
         @SuppressLint("InternalInsetResource")
-        int id = rs.getIdentifier("navigation_bar_height", "dimen", "android");
+        int id = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         if (id > 0) {
-            navigationBarHeight = rs.getDimensionPixelSize(id);
+            navigationBarHeight = resources.getDimensionPixelSize(id);
         }
 
         if (navigationBarHeight <= 0) {
-            WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
+            WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(window.getDecorView());
             if (windowInsets != null) {
                 navigationBarHeight = windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()).bottom;
             }
