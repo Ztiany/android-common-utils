@@ -5,10 +5,14 @@ import android.util.Base64;
 import androidx.annotation.Nullable;
 
 import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import timber.log.Timber;
 
 
 /**
@@ -76,15 +80,16 @@ public class AESUtils {
     private static SecretKeySpec generateAESKey(String algorithm, String password) {
         byte[] passwordData = password.getBytes();
         if (passwordData.length != LIMIT_LEN) {
-            throw new IllegalArgumentException("password 长度必须等于16");
+            throw new IllegalArgumentException("password 的长度必须等于16");
         }
         return new SecretKeySpec(passwordData, algorithm);
     }
 
-    public static IvParameterSpec generateIvParameterSpec(int length) {
+    public static AlgorithmParameterSpec generateParameterSpec(int length) {
         SecureRandom random = new SecureRandom();
-        byte[] ivBytes = new byte[length]; // 16字节的初始向量
-        random.nextBytes(ivBytes); // 生成随机的初始向量
+        byte[] ivBytes = new byte[length];
+        random.nextBytes(ivBytes);
+        Timber.d("generateIvParameterSpec: ivBytes = %s", Arrays.toString(ivBytes));
         return new IvParameterSpec(ivBytes);
     }
 
@@ -93,11 +98,11 @@ public class AESUtils {
     ///////////////////////////////////////////////////////////////////////////
 
     @Nullable
-    public static byte[] encryptData(byte[] content, String algorithm, String password, IvParameterSpec ivParameterSpec) {
+    public static byte[] encryptData(byte[] content, String algorithm, String password, @Nullable AlgorithmParameterSpec parameterSpec) {
         try {
             SecretKeySpec key = generateAESKey(algorithm, password);
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.ENCRYPT_MODE, key, ivParameterSpec);
+            cipher.init(Cipher.ENCRYPT_MODE, key, parameterSpec);
             return cipher.doFinal(content);
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,8 +116,8 @@ public class AESUtils {
     }
 
     @Nullable
-    public static byte[] encryptData(String content, String algorithm, String password, IvParameterSpec ivParameterSpec) {
-        return encryptData(content.getBytes(), algorithm, password);
+    public static byte[] encryptData(String content, String algorithm, String password, @Nullable AlgorithmParameterSpec parameterSpec) {
+        return encryptData(content.getBytes(), algorithm, password, parameterSpec);
     }
 
     @Nullable
@@ -121,8 +126,8 @@ public class AESUtils {
     }
 
     @Nullable
-    public static String encryptDataToBase64(byte[] content, String algorithm, String password, IvParameterSpec ivParameterSpec) {
-        byte[] input = encryptData(content, algorithm, password, ivParameterSpec);
+    public static String encryptDataToBase64(byte[] content, String algorithm, String password, @Nullable AlgorithmParameterSpec parameterSpec) {
+        byte[] input = encryptData(content, algorithm, password, parameterSpec);
         if (input == null) return null;
         return Base64.encodeToString(input, Base64.NO_WRAP);
     }
@@ -133,12 +138,12 @@ public class AESUtils {
     }
 
     @Nullable
-    public static String encryptDataToBase64(String content, String algorithm, String password, IvParameterSpec ivParameterSpec) {
-        return encryptDataToBase64(content.getBytes(), algorithm, password, ivParameterSpec);
+    public static String encryptDataToBase64(String content, String algorithm, String password, @Nullable AlgorithmParameterSpec parameterSpec) {
+        return encryptDataToBase64(content.getBytes(), algorithm, password, parameterSpec);
     }
 
     @Nullable
-    public static String encryptDataToBase64(String content, String algorithm, String password) {
+    public static String encryptDataToBase64(String content, String algorithm, @Nullable String password) {
         return encryptDataToBase64(content.getBytes(), algorithm, password);
     }
 
@@ -147,11 +152,11 @@ public class AESUtils {
     ///////////////////////////////////////////////////////////////////////////
 
     @Nullable
-    public static byte[] decryptData(byte[] content, String algorithm, String password, IvParameterSpec ivParameterSpec) {
+    public static byte[] decryptData(byte[] content, String algorithm, String password, @Nullable AlgorithmParameterSpec parameterSpec) {
         try {
             SecretKeySpec key = generateAESKey(algorithm, password);
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.DECRYPT_MODE, key, ivParameterSpec);
+            cipher.init(Cipher.DECRYPT_MODE, key, parameterSpec);
             return cipher.doFinal(content);
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,8 +169,8 @@ public class AESUtils {
         return decryptData(content, algorithm, password, null);
     }
 
-    public static String decryptDataToString(byte[] content, String algorithm, String password, IvParameterSpec ivParameterSpec) {
-        byte[] bytes = decryptData(content, algorithm, password, ivParameterSpec);
+    public static String decryptDataToString(byte[] content, String algorithm, String password, @Nullable AlgorithmParameterSpec parameterSpec) {
+        byte[] bytes = decryptData(content, algorithm, password, parameterSpec);
         return bytes == null ? "" : new String(bytes);
     }
 
@@ -177,8 +182,8 @@ public class AESUtils {
      * @param content base64 编码的密文
      */
     @Nullable
-    public static byte[] decryptDataFromBase64(String content, String algorithm, String password, IvParameterSpec ivParameterSpec) {
-        return decryptData(Base64.decode(content, Base64.NO_WRAP), algorithm, password, ivParameterSpec);
+    public static byte[] decryptDataFromBase64(String content, String algorithm, String password, @Nullable AlgorithmParameterSpec parameterSpec) {
+        return decryptData(Base64.decode(content, Base64.NO_WRAP), algorithm, password, parameterSpec);
     }
 
     /**
@@ -193,8 +198,8 @@ public class AESUtils {
      * @param content base64 编码的密文
      */
     @Nullable
-    public static String decryptDataFromBase64ToString(String content, String algorithm, String password, IvParameterSpec ivParameterSpec) {
-        byte[] bytes = decryptDataFromBase64(content, algorithm, password, ivParameterSpec);
+    public static String decryptDataFromBase64ToString(String content, String algorithm, String password, @Nullable AlgorithmParameterSpec parameterSpec) {
+        byte[] bytes = decryptDataFromBase64(content, algorithm, password, parameterSpec);
         return bytes == null ? null : new String(bytes);
     }
 
