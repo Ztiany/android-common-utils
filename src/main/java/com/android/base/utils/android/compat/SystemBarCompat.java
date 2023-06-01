@@ -30,27 +30,26 @@ import com.android.base.utils.R;
  * <p>
  * other useful libs:
  * <ol>
- * <li>https://github.com/Zackratos/UltimateBarX</li>
- * <li>https://github.com/Veaer/Glass</li>
- * <li>https://github.com/H07000223/FlycoSystemBar</li>
- * <li>https://github.com/niorgai/StatusBarCompat</li>
- * <li>https://github.com/laobie/StatusBarUtil</li>
- * <li>https://github.com/msdx/status-bar-compat</li>
+ * <li><a href="https://github.com/Zackratos/UltimateBarX">UltimateBarX</a></li>
+ * <li><a href="https://github.com/Veaer/Glass">Glass</a></a></li>
+ * <li><a href="https://github.com/H07000223/FlycoSystemBar">FlycoSystemBar</a></a></li>
+ * <li><a href="https://github.com/niorgai/StatusBarCompat">StatusBarCompat</a></a></li>
+ * <li><a href="https://github.com/laobie/StatusBarUtil">StatusBarUtil</a></a></li>
+ * <li><a href="https://github.com/msdx/status-bar-compat">status-bar-compat</a></a></li>
  * </ol>
  * </p>
  *
  * <p>
  * other useful utils:
  * <ol>
- * <li>{@link androidx.core.view.ViewCompat}</li>
- * <li>{@link androidx.core.view.WindowCompat}</li>
- * <li>{@link androidx.core.view.WindowInsetsCompat}</li>
+ * <li>{@link ViewCompat}</li>
+ * <li>{@link WindowCompat}</li>
+ * <li>{@link WindowInsetsCompat}</li>
  * <li>{@link androidx.core.view.WindowInsetsControllerCompat}</li>
  * </ol>
  * </p>
  *
  * @author Ztiany
- * Date :   2016-03-16 21:52
  */
 public class SystemBarCompat {
 
