@@ -9,14 +9,14 @@ import kotlin.reflect.KProperty
 /* modified from https://github.com/pengxurui/DemoHall */
 
 /** 请确保 T 是 Fragment 所支持的类型。 */
-fun <T> Fragment.requireArgument(name: String): T {
+fun <T> Fragment.requireArgument(name: String, defaultValue: T? = null): T {
     @Suppress("UNCHECKED_CAST")
-    return arguments?.get(name) as? T ?: throw IllegalStateException("Property $name not exists.")
+    return arguments?.get(name) as? T ?: defaultValue ?: throw IllegalStateException("Property $name not exists.")
 }
 
 /** 请确保 T 是 Fragment 所支持的类型。 */
-fun <T> Fragment.getArgument(name: String, defaultValue: T? = null): T? {
-    val arguments = arguments ?: return defaultValue
+fun <T> Fragment.getArgument(name: String): T? {
+    val arguments = arguments ?: return null
     @Suppress("UNCHECKED_CAST")
     return arguments.get(name) as? T
 }

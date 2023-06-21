@@ -6,6 +6,8 @@ import java.io.Closeable
 import java.io.IOException
 
 sealed class Ext<out T> constructor(val boolean: Boolean)
+object Otherwise : Ext<Nothing>(true)
+class WithData<out T>(val data: T) : Ext<T>(false)
 
 /** 如果该对象不是 null，则执行 action。 */
 fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
@@ -16,16 +18,17 @@ fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
 }
 
 /** 如果该对象是 null，则执行 action。 */
-fun <T, E> T?.ifNull(action: () -> E) {
-    if (this == null) {
-        action()
-    }
+fun <T, E> T?.ifNull(action: () -> E) = if (this == null) {
+    WithData(action())
+} else {
+    Otherwise
 }
 
 inline fun <T> Boolean.yes(block: () -> T): Ext<T> = when {
     this -> {
         WithData(block())
     }
+
     else -> Otherwise
 }
 
@@ -35,10 +38,6 @@ inline fun <T> Boolean.no(block: () -> T) = when {
         WithData(block())
     }
 }
-
-object Otherwise : Ext<Nothing>(true)
-
-class WithData<out T>(val data: T) : Ext<T>(false)
 
 inline infix fun <T> Ext<T>.otherwise(block: () -> T): T {
     return when (this) {
