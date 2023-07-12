@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.android.base.utils.R;
 
@@ -341,6 +342,19 @@ public class SystemBarCompat {
      */
     public static void displayInNotch(@NonNull Activity activity) {
         displayInNotch(activity.getWindow());
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Light or Dark StatusBar
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static void setLightStatusBar(Window window, boolean lightStatusBar) {
+        WindowInsetsControllerCompat windowInsetController = WindowCompat.getInsetsController(window, window.getDecorView());
+        windowInsetController.setAppearanceLightStatusBars(lightStatusBar);
+    }
+
+    public static void setLightStatusBar(Activity activity, boolean lightStatusBar) {
+        setLightStatusBar(activity.getWindow(), lightStatusBar);
     }
 
 }
