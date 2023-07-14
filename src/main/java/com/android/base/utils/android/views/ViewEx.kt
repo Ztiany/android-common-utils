@@ -81,9 +81,11 @@ fun View.setClickFeedback(pressAlpha: Float = 0.5F) {
             MotionEvent.ACTION_DOWN -> {
                 v.alpha = pressAlpha
             }
+
             MotionEvent.ACTION_UP -> {
                 v.alpha = 1F
             }
+
             MotionEvent.ACTION_CANCEL -> {
                 v.alpha = 1F
             }
@@ -92,10 +94,10 @@ fun View.setClickFeedback(pressAlpha: Float = 0.5F) {
     }
 }
 
-inline fun View.doOnLayoutAvailable(crossinline block: () -> Unit) {
+inline fun <T : View> T.doOnLayoutAvailable(crossinline block: T.() -> Unit) {
     //isLaidOut 方法作用：如果 view 已经通过至少一个布局，则返回true，因为它最后一次附加到窗口或从窗口分离。
     ViewCompat.isLaidOut(this).yes {
-        block()
+        block(this)
     }.otherwise {
         addOnLayoutChangeListener(object : OnLayoutChangeListener {
             override fun onLayoutChange(
@@ -107,10 +109,10 @@ inline fun View.doOnLayoutAvailable(crossinline block: () -> Unit) {
                 oldLeft: Int,
                 oldTop: Int,
                 oldRight: Int,
-                oldBottom: Int
+                oldBottom: Int,
             ) {
                 removeOnLayoutChangeListener(this)
-                block()
+                block(this@doOnLayoutAvailable)
             }
         })
     }
@@ -134,6 +136,14 @@ inline fun <T : View> T.onGlobalLayoutOnce(crossinline action: T.() -> Unit) {
 
 fun View.setPaddingAll(padding: Int) {
     this.setPadding(padding, padding, padding, padding)
+}
+
+fun View.setPaddingHorizontal(padding: Int) {
+    this.setPadding(padding, paddingTop, padding, paddingBottom)
+}
+
+fun View.setPaddingVertical(padding: Int) {
+    this.setPadding(paddingLeft, padding, paddingRight, padding)
 }
 
 fun View.setPaddingLeft(padding: Int) {
@@ -210,7 +220,7 @@ fun newMMMarginLayoutParams(): ViewGroup.MarginLayoutParams {
 
 fun View.setTopMargin(
     topMargin: Int,
-    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null
+    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null,
 ) {
     val params: ViewGroup.LayoutParams? = layoutParams
     if (params is ViewGroup.MarginLayoutParams) {
@@ -224,7 +234,7 @@ fun View.setTopMargin(
 
 fun View.setBottomMargin(
     bottomMargin: Int,
-    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null
+    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null,
 ) {
     val params: ViewGroup.LayoutParams? = layoutParams
     if (params is ViewGroup.MarginLayoutParams) {
@@ -238,7 +248,7 @@ fun View.setBottomMargin(
 
 fun View.setLeftMargin(
     leftMargin: Int,
-    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null
+    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null,
 ) {
     val params: ViewGroup.LayoutParams? = layoutParams
     if (params is ViewGroup.MarginLayoutParams) {
@@ -252,7 +262,7 @@ fun View.setLeftMargin(
 
 fun View.setRightMargin(
     rightMargin: Int,
-    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null
+    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null,
 ) {
     val params: ViewGroup.LayoutParams? = layoutParams
     if (params is ViewGroup.MarginLayoutParams) {
@@ -269,7 +279,7 @@ fun View.setMargins(
     topMargin: Int,
     rightMargin: Int,
     bottomMargin: Int,
-    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null
+    layoutParamsCreator: (() -> ViewGroup.MarginLayoutParams)? = null,
 ) {
     val params: ViewGroup.LayoutParams? = layoutParams
     if (params is ViewGroup.MarginLayoutParams) {
