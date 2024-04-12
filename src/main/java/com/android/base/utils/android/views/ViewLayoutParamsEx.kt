@@ -1,4 +1,4 @@
-@file:JvmName("LayoutParamsEx")
+@file:JvmName("ViewLayoutParamsEx")
 
 package com.android.base.utils.android.views
 
