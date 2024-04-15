@@ -11,13 +11,16 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import timber.log.Timber;
@@ -26,10 +29,15 @@ import timber.log.Timber;
 /**
  * AES 对称加密。
  * <p> <br/>
- * <b>关于 CBC 模式</b>：AES 算法是一种分块加密算法，它的分组大小（也称为块大小）为 128 位（16 字节）。在使用 CBC 模式进行加密时，每个分组都需要与前一个分组进行异或操作，
- * 因此需要指定一个初始向量（IV）来作为第一个分组的前一个分组。在使用 PKCS7Padding 填充方式时，如果明文长度不是 16 字节的整数倍，则需要使用填充字节将其填充到 16 字节的整
- * 数倍。因此，AES/CBC/PKCS7Padding 支持的明文长度范围为 1 到 2^36-1 字节（因为填充字节需要使用一个字节表示填充长度，因此填充长度最大为 255）。需要注意的是，由于使用 CBC
- * 模式进行加密时需要使用一个 IV 来作为第一个分组的前一个分组，因此在每次加密时都需要使用一个新的随机 IV。在解密时，需要使用相同的 IV 来解密密文。
+ * <b>关于默认的加密模式</b>：默认情况下，Android 中的 AES 加密使用的是 CBC（Cipher Block Chaining）模式，并且填充模式是 PKCS7Padding。
+ * 在 JDK 中，AES 加密的默认模式是 ECB（Electronic Codebook Mode），默认填充模式是 PKCS5Padding 或 PKCS7Padding（具体取决于 JDK
+ * 的版本）。这两种填充模式实际上是相同的，只是 PKCS7Padding 是 PKCS5Padding 的超集，可以处理更多的块大小。
+ * <p> <br/>
+ * <b>关于 CBC 模式</b>：AES 算法是一种分块加密算法，它的分组大小（也称为块大小）为 128 位（16 字节）。在使用 CBC 模式进行加密时，每个分组
+ * 都需要与前一个分组进行异或操作，因此需要指定一个初始向量（IV）来作为第一个分组的前一个分组。在使用 PKCS7Padding 填充方式时，如果明文
+ * 长度不是 16 字节的整数倍，则需要使用填充字节将其填充到 16 字节的整数倍。因此，AES/CBC/PKCS7Padding 支持的明文长度范围为 1 到 2^36-1 字
+ * 节（因为填充字节需要使用一个字节表示填充长度，因此填充长度最大为 255）。需要注意的是，由于使用 CBC 模式进行加密时需要使用一个 IV 来作
+ * 为第一个分组的前一个分组，因此在每次加密时都需要使用一个新的随机 IV。在解密时，需要使用相同的 IV 来解密密文。
  * <p> <br/>
  * 相关参考链接：
  * <ol>
@@ -46,7 +54,9 @@ public class AESUtils {
     @SuppressWarnings("unused")
     public static class Algorithm {
 
-        //算法/加密模式/填充模式
+        /**
+         * 指定算法为 AES，则表示使用 SDK 默认的加密模式和填充模式。
+         */
         public static String AES = "AES";
 
         public static String AES_CBC_ISO10126PADDING = "AES/CBC/ISO10126Padding";
@@ -56,6 +66,7 @@ public class AESUtils {
          * 在 AES/CBC/PKCS5Padding 加密模式中，AES 算法使用的块大小为 128 位（16 字节），而 CBC 模式需要每个块都使用一个独立的初始向量，因此 IV 的长度应该与块大小相同，即 16 字节。
          */
         public static String AES_CBC_PKCS5PADDING = "AES/CBC/PKCS5Padding";
+
         public static int AES_CBC_PKCS5PADDING_BLOCK_LEN = 16;
 
         /**
@@ -85,31 +96,82 @@ public class AESUtils {
         public static String AES_OFB_ISO10126PADDING = "AES/OFB/ISO10126Padding";
         public static String AES_OFB_NOPADDING = "AES/OFB/NoPadding";
         public static String AES_OFB_PKCS5PADDING = "AES/OFB/PKCS5Padding";
+
+        /**
+         * PBKDF2WithHmacSHA1 是一种基于密码的密钥派生函数（Password-Based Key Derivation Function，PBKDF），它使用 HMAC-SHA1（Hash-based Message Authentication Code with Secure Hash Algorithm 1）算法作为其伪随机函数。
+         * <p><br/>
+         * PBKDF2 是一种密码学函数，用于从密码和盐值（salt）生成密钥。它的设计目的是增加从密码派生出来的密钥的强度，以抵御暴力破解等攻击。
+         * <p><br/>
+         * HMAC-SHA1 是一种基于哈希函数 SHA-1 和密钥的消息认证码（MAC）算法。它使用 SHA-1 哈希函数和密钥来生成消息的认证码，并且具有防止伪造认证码的安全特性。
+         * <p><br/>
+         * 将 PBKDF2 与 HMAC-SHA1 结合在一起，就得到了 PBKDF2WithHmacSHA1 算法，它使用 HMAC-SHA1 作为其伪随机函数来执行密钥派生。
+         * <p><br/>
+         * PBKDF2WithHmacSHA1 算法通常用于从密码和随机盐值派生出安全的密钥，用于加密或进行身份验证等安全目的。这种算法的强度取决于迭代次数和盐值的质量，通常会通过增加迭代次数和使用随机盐值来提高密钥的安全性。
+         *
+         * @see AESUtils#generatePBKDAESKey(String, PBKDF2Password)
+         */
+        private static final String PBKDF2_DERIVATION_ALGORITHM = "PBKDF2WithHmacSHA1";
+
     }
 
-    private static final int LIMIT_LEN = 16;
-
-    /**
-     * @throws InvalidKeyException 如果 password 的长度不等于 16，则抛出此异常。
-     */
     @NonNull
-    private static SecretKeySpec generateAESKey(String algorithm, String password) throws InvalidKeyException {
-        byte[] passwordData = password.getBytes();
-        if (passwordData.length != LIMIT_LEN) {
-            throw new InvalidKeyException("password 的长度必须等于16");
+    private static SecretKeySpec generateAESKey(
+            @NonNull String algorithm,
+            @NonNull Password password
+    ) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        if (password instanceof GeneralPassword) {
+            return generateGeneralAESKey(algorithm, ((GeneralPassword) password).getPassword());
+        } else if (password instanceof PBKDF2Password) {
+            return generatePBKDAESKey(algorithm, (PBKDF2Password) password);
         }
+        throw new IllegalArgumentException("Unsupported password type: " + password.getClass().getName());
+    }
+
+    private static SecretKeySpec generateGeneralAESKey(@NonNull String algorithm, @NonNull String password) {
+        byte[] passwordData = password.getBytes();
         return new SecretKeySpec(passwordData, algorithm);
     }
 
     /**
-     * 生成 AES 算法的参数规范。IV 必须是随机生成的，每次加密时都需要使用一个新的 IV，以保证加密的安全性。
+     * 生成基于 PBKDF2 的 AES 密钥
      *
-     * @param length CBC 模式需要每个块都使用一个独立的初始向量，且因此  IV 的 长度应该与块大小相同，比如在 AES/CBC/PKCS5Padding 加密模式中，AES 算法使用的块大小为 128 位（16 字节），因此 IV 的长度应该为 16 字节。
+     * @param algorithm 密钥算法，例如 "AES"
+     * @param password  密钥密码
+     * @return 生成的密钥
+     * @throws NoSuchAlgorithmException 如果指定的算法不可用
+     * @throws InvalidKeySpecException  如果生成密钥的规范无效
+     */
+    public static SecretKeySpec generatePBKDAESKey(
+            @NonNull String algorithm,
+            @NonNull PBKDF2Password password
+    ) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        // 创建密钥工厂
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(Algorithm.PBKDF2_DERIVATION_ALGORITHM);
+        // 创建 PBEKeySpec 对象，指定密码、盐值、迭代次数和密钥长度
+        PBEKeySpec keySpec = new PBEKeySpec(
+                password.getPassword().toCharArray(),
+                password.getSalt(),
+                password.getIterationCount(),
+                password.getKeyLength()
+        );
+        // 生成密钥并返回
+        byte[] keyBytes = keyFactory.generateSecret(keySpec).getEncoded();
+        return new SecretKeySpec(keyBytes, algorithm);
+    }
+
+    /**
+     * 在使用 AES 加密时，可以使用一组初始化向量（Initialization Vector，简称 IV）来增加加密的安全性。IV 的目的是在每次加密操作中引入随机性，即使相同的明文被多次加密，由于每次都使用不同的 IV，所生成的密文也会不同。
+     * <p> <br/>
+     * 该方法用于根据一组随机数组（即 IV）生成一个 IvParameterSpec（IvParameterSpec 是 AlgorithmParameterSpec 的一种）。按照规范，IV 必须是随机生成的，每次加密时都需要使用一个新的 IV，以保证加密的安全性。
+     * <p> <br/>
+     * 解密操作需要使用与加密操作相同的初始化向量（IV），通常情况下，在将密文发送给接收方时，通常会将 IV 与密文一起发送。在解密时，解密程序首先从密文中提取 IV，然后使用相同的 IV 和密钥对密文进行解密。你可以从 {@link IvParameterSpec#getIV()} 方法获取生成的 IV。
+     *
+     * @param length CBC 模式需要每个块都使用一个独立的初始向量，且  IV 的 长度应该与块大小相同，比如在 AES/CBC/PKCS5Padding 加密模式中，AES 算法使用的块大小为 128 位（16 字节），则 IV 的长度应该为 16 字节。
      * @return AlgorithmParameterSpec 生成的参数规范。
      * @throws IllegalArgumentException 如果 length 小于等于 0，则抛出该异常。
      */
     @NonNull
-    public static AlgorithmParameterSpec generateParameterSpec(int length) {
+    public static IvParameterSpec generateParameterSpecByIV(int length) {
         if (length <= 0) {
             throw new IllegalArgumentException("length 必须大于 0");
         }
@@ -128,7 +190,12 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static byte[] encryptData(@NonNull byte[] content, @NonNull String algorithm, @NonNull String password, @Nullable AlgorithmParameterSpec parameterSpec) throws GeneralSecurityException {
+    public static byte[] encryptData(
+            @NonNull byte[] content,
+            @NonNull String algorithm,
+            @NonNull Password password,
+            @Nullable AlgorithmParameterSpec parameterSpec
+    ) throws GeneralSecurityException {
         SecretKeySpec key = generateAESKey(algorithm, password);
         Cipher cipher = Cipher.getInstance(algorithm);
         cipher.init(Cipher.ENCRYPT_MODE, key, parameterSpec);
@@ -139,7 +206,11 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static byte[] encryptData(@NonNull byte[] content, @NonNull String algorithm, @NonNull String password) throws GeneralSecurityException {
+    public static byte[] encryptData(
+            @NonNull byte[] content,
+            @NonNull String algorithm,
+            @NonNull Password password
+    ) throws GeneralSecurityException {
         return encryptData(content, algorithm, password, null);
     }
 
@@ -147,7 +218,12 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static byte[] encryptData(@NonNull String content, @NonNull String algorithm, @NonNull String password, @Nullable AlgorithmParameterSpec parameterSpec) throws GeneralSecurityException {
+    public static byte[] encryptData(
+            @NonNull String content,
+            @NonNull String algorithm,
+            @NonNull Password password,
+            @Nullable AlgorithmParameterSpec parameterSpec
+    ) throws GeneralSecurityException {
         return encryptData(content.getBytes(), algorithm, password, parameterSpec);
     }
 
@@ -155,7 +231,11 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static byte[] encryptData(@NonNull String content, @NonNull String algorithm, @NonNull String password) throws GeneralSecurityException {
+    public static byte[] encryptData(
+            @NonNull String content,
+            @NonNull String algorithm,
+            @NonNull Password password
+    ) throws GeneralSecurityException {
         return encryptData(content.getBytes(), algorithm, password);
     }
 
@@ -163,7 +243,12 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static String encryptDataToBase64(@NonNull byte[] content, @NonNull String algorithm, @NonNull String password, @Nullable AlgorithmParameterSpec parameterSpec) throws GeneralSecurityException {
+    public static String encryptDataToBase64(
+            @NonNull byte[] content,
+            @NonNull String algorithm,
+            @NonNull Password password,
+            @Nullable AlgorithmParameterSpec parameterSpec
+    ) throws GeneralSecurityException {
         byte[] input = encryptData(content, algorithm, password, parameterSpec);
         return Base64.encodeToString(input, Base64.NO_WRAP);
     }
@@ -172,7 +257,11 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static String encryptDataToBase64(@NonNull byte[] content, @NonNull String algorithm, @NonNull String password) throws GeneralSecurityException {
+    public static String encryptDataToBase64(
+            @NonNull byte[] content,
+            @NonNull String algorithm,
+            @NonNull Password password
+    ) throws GeneralSecurityException {
         return encryptDataToBase64(content, algorithm, password, null);
     }
 
@@ -180,7 +269,12 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static String encryptDataToBase64(@NonNull String content, @NonNull String algorithm, @NonNull String password, @Nullable AlgorithmParameterSpec parameterSpec) throws GeneralSecurityException {
+    public static String encryptDataToBase64(
+            @NonNull String content,
+            @NonNull String algorithm,
+            @NonNull Password password,
+            @Nullable AlgorithmParameterSpec parameterSpec
+    ) throws GeneralSecurityException {
         return encryptDataToBase64(content.getBytes(), algorithm, password, parameterSpec);
     }
 
@@ -188,7 +282,11 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static String encryptDataToBase64(@NonNull String content, @NonNull String algorithm, @NonNull String password) throws GeneralSecurityException {
+    public static String encryptDataToBase64(
+            @NonNull String content,
+            @NonNull String algorithm,
+            @NonNull Password password
+    ) throws GeneralSecurityException {
         return encryptDataToBase64(content.getBytes(), algorithm, password);
     }
 
@@ -200,7 +298,12 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static byte[] decryptData(@NonNull byte[] content, @NonNull String algorithm, @NonNull String password, @Nullable AlgorithmParameterSpec parameterSpec) throws GeneralSecurityException {
+    public static byte[] decryptData(
+            @NonNull byte[] content,
+            @NonNull String algorithm,
+            @NonNull Password password,
+            @Nullable AlgorithmParameterSpec parameterSpec
+    ) throws GeneralSecurityException {
         SecretKeySpec key = generateAESKey(algorithm, password);
         Cipher cipher = Cipher.getInstance(algorithm);
         cipher.init(Cipher.DECRYPT_MODE, key, parameterSpec);
@@ -211,7 +314,11 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static byte[] decryptData(@NonNull byte[] content, @NonNull String algorithm, @NonNull String password) throws GeneralSecurityException {
+    public static byte[] decryptData(
+            @NonNull byte[] content,
+            @NonNull String algorithm,
+            @NonNull Password password
+    ) throws GeneralSecurityException {
         return decryptData(content, algorithm, password, null);
     }
 
@@ -219,7 +326,12 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static String decryptDataToString(@NonNull byte[] content, @NonNull String algorithm, @NonNull String password, @Nullable AlgorithmParameterSpec parameterSpec) throws GeneralSecurityException {
+    public static String decryptDataToString(
+            @NonNull byte[] content,
+            @NonNull String algorithm,
+            @NonNull Password password,
+            @Nullable AlgorithmParameterSpec parameterSpec
+    ) throws GeneralSecurityException {
         byte[] bytes = decryptData(content, algorithm, password, parameterSpec);
         return new String(bytes);
     }
@@ -228,7 +340,11 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static String decryptDataToString(@NonNull byte[] content, @NonNull String algorithm, @NonNull String password) throws GeneralSecurityException {
+    public static String decryptDataToString(
+            @NonNull byte[] content,
+            @NonNull String algorithm,
+            @NonNull Password password
+    ) throws GeneralSecurityException {
         return decryptDataToString(content, algorithm, password, null);
     }
 
@@ -237,7 +353,12 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static byte[] decryptDataFromBase64(@NonNull String content, @NonNull String algorithm, @NonNull String password, @Nullable AlgorithmParameterSpec parameterSpec) throws GeneralSecurityException {
+    public static byte[] decryptDataFromBase64(
+            @NonNull String content,
+            @NonNull String algorithm,
+            @NonNull Password password,
+            @Nullable AlgorithmParameterSpec parameterSpec
+    ) throws GeneralSecurityException {
         return decryptData(Base64.decode(content, Base64.NO_WRAP), algorithm, password, parameterSpec);
     }
 
@@ -246,7 +367,11 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static byte[] decryptDataFromBase64(@NonNull String content, @NonNull String algorithm, @NonNull String password) throws GeneralSecurityException {
+    public static byte[] decryptDataFromBase64(
+            @NonNull String content,
+            @NonNull String algorithm,
+            @NonNull Password password
+    ) throws GeneralSecurityException {
         return decryptDataFromBase64(content, algorithm, password, null);
     }
 
@@ -255,7 +380,12 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static String decryptDataFromBase64ToString(@NonNull String content, @NonNull String algorithm, @NonNull String password, @Nullable AlgorithmParameterSpec parameterSpec) throws GeneralSecurityException {
+    public static String decryptDataFromBase64ToString(
+            @NonNull String content,
+            @NonNull String algorithm,
+            @NonNull Password password,
+            @Nullable AlgorithmParameterSpec parameterSpec
+    ) throws GeneralSecurityException {
         byte[] bytes = decryptDataFromBase64(content, algorithm, password, parameterSpec);
         return new String(bytes);
     }
@@ -265,7 +395,11 @@ public class AESUtils {
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
-    public static String decryptDataFromBase64ToString(@NonNull String content, @NonNull String algorithm, @NonNull String password) throws GeneralSecurityException {
+    public static String decryptDataFromBase64ToString(
+            @NonNull String content,
+            @NonNull String algorithm,
+            @NonNull Password password
+    ) throws GeneralSecurityException {
         return decryptDataFromBase64ToString(content, algorithm, password, null);
     }
 
