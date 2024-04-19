@@ -29,7 +29,7 @@ import com.android.base.utils.R;
  * A tool for adjusting system bars.
  *
  * <p>
- * other useful libs:
+ * other useful libs you may need to know:
  * <ol>
  * <li><a href="https://github.com/Zackratos/UltimateBarX">UltimateBarX</a></li>
  * <li><a href="https://github.com/Veaer/Glass">Glass</a></a></li>
@@ -41,7 +41,7 @@ import com.android.base.utils.R;
  * </p>
  *
  * <p>
- * other useful utils:
+ * other useful utils you may need to know:
  * <ol>
  * <li>{@link ViewCompat}</li>
  * <li>{@link WindowCompat}</li>

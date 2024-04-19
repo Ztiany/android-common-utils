@@ -14,9 +14,9 @@ private const val REQUEST_CODE = 20099
 /**
  * References:
  *
- * - [android-toast-doesnt-show-up](https://stackoverflow.com/questions/53703013/android-toast-doesnt-show-up)
+ * - [android-toast-doesn't-show-up](https://stackoverflow.com/questions/53703013/android-toast-doesnt-show-up)
  * - [disabling-notifications-also-disables-toast-on-oreo](https://stackoverflow.com/questions/50742586/disabling-notifications-also-disables-toast-on-oreo)
- * - [issuetracker.google.com/issues/36951147](https://issuetracker.google.com/issues/36951147)
+ * - [issue-tracker.google.com/issues/36951147](https://issuetracker.google.com/issues/36951147)
  */
 class NotificationCompat {
 

@@ -31,7 +31,6 @@ fun <E> MutableList<E>.removeAllWhen(firstMatchOnly: Boolean = false, filter: (E
     return removed
 }
 
-
 inline fun <T> List<T>.findFrom(startIndex: Int = 0, predicate: (T) -> Boolean): T? {
     var element: T
     for (i in startIndex until size) {
@@ -39,4 +38,16 @@ inline fun <T> List<T>.findFrom(startIndex: Int = 0, predicate: (T) -> Boolean):
         if (predicate(element)) return element
     }
     return null
+}
+
+/**
+ * Find the first element that matches the given [predicate] and return the element with its index. Null and -1 will be returned if no element is found.
+ */
+fun <E> Collection<E>.findWithIndex(predicate: (E) -> Boolean): Pair<E?, Int> {
+    for ((index, element) in this.withIndex()) {
+        if (predicate(element)) {
+            return Pair(element, index)
+        }
+    }
+    return Pair(null, -1)
 }

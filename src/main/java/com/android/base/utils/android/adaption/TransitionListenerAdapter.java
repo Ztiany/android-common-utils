@@ -1,12 +1,8 @@
 package com.android.base.utils.android.adaption;
 
-import android.os.Build;
 import android.transition.Transition;
 
-import androidx.annotation.RequiresApi;
 
-
-@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 public interface TransitionListenerAdapter extends Transition.TransitionListener {
 
     @Override

@@ -65,7 +65,7 @@ inline fun ignoreCrash(code: () -> Unit) {
 }
 
 /**
- * 关闭 IO
+ * 关闭 IO。
  */
 fun closeIO(closeable: Closeable?) {
     if (closeable != null) {
@@ -78,7 +78,7 @@ fun closeIO(closeable: Closeable?) {
 }
 
 /**
- * 安静关闭 IO
+ * 安静地关闭 IO。
  */
 fun closeIOQuietly(closeable: Closeable?) {
     if (closeable != null) {
@@ -90,7 +90,7 @@ fun closeIOQuietly(closeable: Closeable?) {
 }
 
 /**
- * 关闭 IO
+ * 关闭 IO。
  *
  * @param closeables closeable
  */
@@ -101,7 +101,7 @@ fun closeIOs(vararg closeables: Closeable?) {
 }
 
 /**
- * 安静关闭IO
+ * 安静地关闭 IO。
  *
  * @param closeables closeable
  */

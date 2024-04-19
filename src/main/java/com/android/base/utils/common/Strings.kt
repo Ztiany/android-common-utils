@@ -112,9 +112,9 @@ fun isDecimals(decimals: String?): Boolean {
 }
 
 /**
- * 是否为纯中文
+ * 是否为纯中文。
  */
-fun isJustChineseCharacter(chinese: String?): Boolean {
+fun isPureChineseCharacter(chinese: String?): Boolean {
     return !isEmpty(chinese) && Pattern.matches(CHINESE_REGEX, chinese ?: "")
 }
 
@@ -131,7 +131,7 @@ fun isLengthIn(string: String?, min: Int, max: Int): Boolean {
 }
 
 fun isEmpty(str: String?): Boolean {
-    return str == null || str.isEmpty()
+    return str.isNullOrEmpty()
 }
 
 fun isSpace(s: String?): Boolean {

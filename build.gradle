@@ -23,6 +23,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    sourceSets {
+        main {
+            java.srcDirs += "src/github/java"
+            res.srcDirs += "src/github/res"
+        }
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = ["-Xcontext-receivers"]
@@ -46,7 +53,7 @@ dependencies {
     compileOnly KotlinLibraries.kotlinAndroidCoroutines
 
     //Utils
-    api "com.blankj:utilcodex:1.31.1" //https://github.com/Blankj/AndroidUtilCode
     implementation ThirdLibraries.okIO
     implementation ThirdLibraries.timber
+    implementation ThirdLibraries.gson
 }

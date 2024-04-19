@@ -47,7 +47,7 @@ fun File.isFileExists(): Boolean {
 }
 
 /**
- * 获取全路径中的文件拓展名
+ * 获取全路径中的文件拓展名。
  *
  * @return 文件拓展名
  */

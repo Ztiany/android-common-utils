@@ -9,7 +9,11 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.TypedValue
 import android.view.View
-import androidx.annotation.*
+import androidx.annotation.ArrayRes
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -154,11 +158,11 @@ fun getDimensionPixelSize(dimenId: Int): Int {
 }
 
 fun getIntArray(@ArrayRes id: Int): IntArray {
-    return BaseUtils.getResources().getIntArray(id)
+    return getActivityContext().resources.getIntArray(id)
 }
 
 ///////////////////////////////////////////////////////////////////////////
-// uri
+// URI
 ///////////////////////////////////////////////////////////////////////////
 fun createResourceUri(id: Int): Uri {
     return Uri.parse("android.resource://" + BaseUtils.getAppContext().packageName + "/" + id)

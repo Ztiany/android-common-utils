@@ -9,7 +9,7 @@ import com.android.base.utils.BaseUtils;
 import timber.log.Timber;
 
 /**
- * modified from <a href='https://github.com/hongyangAndroid/SpCache'>hongyangAndroid/SpCache</a>.
+ * This class is modified from <a href="https://github.com/hongyangAndroid/SpCache">HongYangAndroid/SpCache</a>.
  */
 @SuppressWarnings("unused")
 public class SpCache {
@@ -133,7 +133,6 @@ public class SpCache {
             editor.commit();
         }
     }
-
 
     private Object readDisk(String key, Object defaultObject) {
         Timber.e("readDisk");

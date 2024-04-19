@@ -7,9 +7,6 @@ import static com.android.base.utils.android.network.NetworkStateKt.observableNe
 
 import android.app.Application;
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
-import android.util.DisplayMetrics;
 
 import com.android.base.utils.android.network.NetworkState;
 import com.android.base.utils.android.views.AntiShakeUtil;
@@ -41,32 +38,25 @@ public class BaseUtils {
         return sApplication;
     }
 
-    public static Resources getResources() {
-        return sApplication.getResources();
-    }
-
-    public static AssetManager getAssets() {
-        return sApplication.getAssets();
-    }
-
-    public static DisplayMetrics getDisplayMetrics() {
-        return sApplication.getResources().getDisplayMetrics();
-    }
-
     /**
-     * 获取可以监听网络状态。
+     * Get the state of the network.
      */
     public static Flow<NetworkState> networkStateFlow() {
         return observableNetworkState();
     }
 
     /**
-     * 获取可以监听网络状态。
+     * Get the application's state of being in the foreground or background.
      */
     public static Flow<Boolean> appStateFlow() {
         return observableAppState();
     }
 
+    /**
+     * Set the interval time of the a click event.
+     *
+     * @param clickInterval The interval time of the a click event.
+     */
     public static void setClickInterval(long clickInterval) {
         AntiShakeUtil.setClickInterval(clickInterval);
     }

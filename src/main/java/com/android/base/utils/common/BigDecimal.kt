@@ -2,7 +2,7 @@ package com.android.base.utils.common
 
 import java.math.BigDecimal
 
-/*使用 BigDecimal 对进行金额计算 */
+/*使用 BigDecimal 对进行金额计算。 */
 
 val ZERO = BigDecimal("0")
 
@@ -80,7 +80,7 @@ fun isGreaterThan(a: Float, b: Float): Boolean {
 }
 
 /**
- * @return a >= b true or false
+ * @return True if a >= b then false.
  */
 fun isEqualsOrGreaterThan(a: Float, b: Float): Boolean {
     val compare = a.compareTo(b)
@@ -88,14 +88,14 @@ fun isEqualsOrGreaterThan(a: Float, b: Float): Boolean {
 }
 
 /**
- * @return true a < b or false
+ * @return True if a < b  then false.
  */
 fun isLessThan(a: Float, b: Float): Boolean {
     return a.compareTo(b) == -1
 }
 
 /**
- * @return a <= b true or false
+ * @return True if a <= b  or false.
  */
 fun isEqualsOrLessThan(a: Float, b: Float): Boolean {
     val compare = a.compareTo(b)
