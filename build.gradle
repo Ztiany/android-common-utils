@@ -1,6 +1,6 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 android {
@@ -39,21 +39,21 @@ android {
 
 dependencies {
     //AndroidX
-    compileOnly AndroidLibraries.annotations
-    compileOnly AndroidLibraries.activityKtx
-    compileOnly AndroidLibraries.fragmentKtx
-    compileOnly AndroidLibraries.appcompat
-    compileOnly AndroidLibraries.material
-    compileOnly AndroidLibraries.viewpager2
+    compileOnly libs.androidx.annotations
+    compileOnly libs.androidx.activity.ktx
+    compileOnly libs.androidx.fragment.ktx
+    compileOnly libs.androidx.appcompat
+    compileOnly libs.google.ui.material
+    compileOnly libs.androidx.viewpager2
 
     //Kotlin
-    compileOnly KotlinLibraries.kotlinStdlib
-    compileOnly KotlinLibraries.kotlinReflect
-    compileOnly KotlinLibraries.kotlinCoroutines
-    compileOnly KotlinLibraries.kotlinAndroidCoroutines
+    compileOnly libs.kotlin.stdlib
+    compileOnly libs.kotlin.reflect
+    compileOnly libs.kotlinx.coroutines
+    compileOnly libs.kotlinx.coroutines.android
 
     //Utils
-    implementation ThirdLibraries.okIO
-    implementation ThirdLibraries.timber
-    implementation ThirdLibraries.gson
+    implementation libs.square.okio
+    implementation libs.jakewharton.timber
+    implementation libs.google.gson
 }
