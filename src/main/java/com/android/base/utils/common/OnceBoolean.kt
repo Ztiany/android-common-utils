@@ -5,7 +5,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /** Returning the [initValue] at first access, then returning the opposite of the [initValue] after. */
-fun once(initValue: Boolean = false): ReadOnlyProperty<Any, Boolean> = OnceDelegate(initValue)
+fun onceBoolean(initValue: Boolean = false): ReadOnlyProperty<Any, Boolean> = OnceDelegate(initValue)
 
 internal class OnceDelegate(initValue: Boolean) : ReadOnlyProperty<Any, Boolean> {
 
