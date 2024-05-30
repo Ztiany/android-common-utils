@@ -2,6 +2,7 @@ package com.android.base.utils.security;
 
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
@@ -16,12 +17,15 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
+
+import timber.log.Timber;
 
 /**
  * RSA 非对称加密。
@@ -36,17 +40,17 @@ public final class RSAUtils {
     private final static String KEY_PAIR = "RSA";
 
     /**
-     * 默认
+     * 默认。
      */
     public static final String TRANSFORMATION_DEFAULT = KEY_PAIR;
 
     /**
-     * JDK标准
+     * JDK 标准。
      */
     public static final String TRANSFORMATION_ECB_PKCS1PADDING = "RSA/ECB/PKCS1Padding";
 
     /**
-     * Android标准
+     * Android 标准。
      */
     public static final String TRANSFORMATION_ECB_NOPADDING = "RSA/ECB/NoPadding";
 
@@ -57,9 +61,9 @@ public final class RSAUtils {
     /**
      * 用公钥加密，每次加密的字节数，不能超过密钥的长度值减去 11。
      *
-     * @param data      需加密数据的 byte 数据
-     * @param publicKey 公钥
-     * @return 加密后的byte型数据
+     * @param data      需加密数据的 byte 数据。
+     * @param publicKey 公钥。
+     * @return 加密后的 byte 型数据。
      */
     @Nullable
     public static byte[] encryptData(String transformation, byte[] data, PublicKey publicKey) {
@@ -70,16 +74,16 @@ public final class RSAUtils {
             // 传入编码数据并返回编码结果
             return cipher.doFinal(data);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e, "encryptData: ");
             return null;
         }
     }
 
     /**
-     * 用私钥解密
+     * 用私钥解密。
      *
      * @param encryptedData 经过 encryptedData() 加密返回的 byte 数据。
-     * @param privateKey    私钥
+     * @param privateKey    私钥。
      */
     @Nullable
     public static byte[] decryptData(String transformation, byte[] encryptedData, PrivateKey privateKey) {
@@ -88,15 +92,16 @@ public final class RSAUtils {
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             return cipher.doFinal(encryptedData);
         } catch (Exception e) {
+            Timber.e(e, "decryptData: ");
             return null;
         }
     }
 
     /**
-     * 用公钥解密
+     * 用公钥解密。
      *
      * @param encryptedData 经过 encryptedData() 加密返回的 byte 数据。
-     * @param publicKey     公钥
+     * @param publicKey     公钥。
      */
     @Nullable
     public static String decryptData(String transformation, byte[] encryptedData, PublicKey publicKey) {
@@ -105,7 +110,7 @@ public final class RSAUtils {
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
             return new String(cipher.doFinal(encryptedData), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e, "decryptData: ");
             return null;
         }
     }
@@ -124,15 +129,33 @@ public final class RSAUtils {
     /**
      * 随机生成 RSA 密钥对。
      *
-     * @param keyLength 密钥长度，范围：512～2048，一般1024
+     * @param keyLength 密钥长度，范围：512～2048，一般 1024。
      */
     public static KeyPair generateRSAKeyPair(int keyLength) {
         try {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance(KEY_PAIR);
             kpg.initialize(keyLength);
-            return kpg.genKeyPair();
+            return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Timber.e(e, "generateRSAKeyPair: ");
+            return null;
+        }
+    }
+
+    /**
+     * 随机生成 RSA 密钥对。这里需要提供一个新的 SecureRandom 实例用于初始化。在大多数情况下，这与使用 SDK 内部默认的 SecureRandom
+     * 实例在安全性上是等效的，因为默认的 SecureRandom 通常已经足够安全。但是显式传入 SecureRandom可以确保每次生成密钥对时都使用新的随
+     * 机性源，进一步提高安全性。
+     *
+     * @param keyLength 密钥长度，范围：512～2048，一般 1024。
+     */
+    public static KeyPair generateRSAKeyPair(int keyLength, @NonNull SecureRandom secureRandom) {
+        try {
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance(KEY_PAIR);
+            kpg.initialize(keyLength, secureRandom);
+            return kpg.generateKeyPair();
+        } catch (NoSuchAlgorithmException e) {
+            Timber.e(e, "generateRSAKeyPair: ");
             return null;
         }
     }
@@ -196,8 +219,8 @@ public final class RSAUtils {
     /**
      * 从字符串中加载公钥。
      *
-     * @param publicKeyStr Base64 编码的公钥数据字符串
-     * @throws Exception 加载公钥时产生的异常
+     * @param publicKeyStr Base64 编码的公钥数据字符串。
+     * @throws Exception 加载公钥时产生的异常。
      */
     public static PublicKey loadPublicKey(String publicKeyStr) throws Exception {
         try {
@@ -208,7 +231,7 @@ public final class RSAUtils {
         } catch (NoSuchAlgorithmException e) {
             throw new Exception("无此算法");
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
+            Timber.e(e, "loadPublicKey: ");
             throw new Exception("公钥非法" + e.getLocalizedMessage());
         } catch (NullPointerException e) {
             throw new Exception("公钥数据为空");

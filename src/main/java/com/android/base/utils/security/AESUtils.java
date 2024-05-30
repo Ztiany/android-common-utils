@@ -17,7 +17,9 @@ import java.util.Arrays;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
@@ -182,11 +184,28 @@ public class AESUtils {
         return new IvParameterSpec(ivBytes);
     }
 
+    @NonNull
+    public static IvParameterSpec generateParameterSpecByIV(String ivContent) {
+        Timber.d("generateParameterSpec: ivBytes = %s", ivContent);
+        return new IvParameterSpec(ivContent.getBytes());
+    }
+
+    public static String generateAESKey(
+            @NonNull String algorithm,
+            int length
+    ) throws NoSuchAlgorithmException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm);
+        keyGenerator.init(length);
+        SecretKey secretKey = keyGenerator.generateKey();
+        return Base64.encodeToString(secretKey.getEncoded(), Base64.NO_WRAP);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // encryptData
     ///////////////////////////////////////////////////////////////////////////
 
     /**
+     * @param parameterSpec see {@link #generateParameterSpecByIV(int)} or {@link #generateParameterSpecByIV(String)}
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
@@ -215,6 +234,7 @@ public class AESUtils {
     }
 
     /**
+     * @param parameterSpec see {@link #generateParameterSpecByIV(int)} or {@link #generateParameterSpecByIV(String)}
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
@@ -240,6 +260,7 @@ public class AESUtils {
     }
 
     /**
+     * @param parameterSpec see {@link #generateParameterSpecByIV(int)} or {@link #generateParameterSpecByIV(String)}
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
@@ -266,6 +287,7 @@ public class AESUtils {
     }
 
     /**
+     * @param parameterSpec see {@link #generateParameterSpecByIV(int)} or {@link #generateParameterSpecByIV(String)}
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
@@ -295,6 +317,7 @@ public class AESUtils {
     ///////////////////////////////////////////////////////////////////////////
 
     /**
+     * @param parameterSpec see {@link #generateParameterSpecByIV(int)} or {@link #generateParameterSpecByIV(String)}
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
@@ -323,6 +346,7 @@ public class AESUtils {
     }
 
     /**
+     * @param parameterSpec see {@link #generateParameterSpecByIV(int)} or {@link #generateParameterSpecByIV(String)}
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
@@ -349,7 +373,8 @@ public class AESUtils {
     }
 
     /**
-     * @param content base64 编码的密文。
+     * @param content       base64 编码的密文。
+     * @param parameterSpec see {@link #generateParameterSpecByIV(int)} or {@link #generateParameterSpecByIV(String)}
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
@@ -376,7 +401,8 @@ public class AESUtils {
     }
 
     /**
-     * @param content base64 编码的密文。
+     * @param content       base64 编码的密文。
+     * @param parameterSpec see {@link #generateParameterSpecByIV(int)} or {@link #generateParameterSpecByIV(String)}
      * @throws GeneralSecurityException maybe maybe {@link NoSuchPaddingException}, {@link NoSuchAlgorithmException}, {@link InvalidAlgorithmParameterException}, {@link InvalidKeyException}, {@link IllegalBlockSizeException}, {@link BadPaddingException},
      */
     @NonNull
