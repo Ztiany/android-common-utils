@@ -2,25 +2,22 @@
 
 package com.android.base.utils.android.views
 
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
 import android.view.View.OnLayoutChangeListener
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.annotation.IdRes
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.FragmentActivity
+import com.android.base.utils.android.activityContext
 import com.android.base.utils.android.compat.AndroidVersion.atLeast
 import com.android.base.utils.common.otherwise
 import com.android.base.utils.common.yes
 
 val View.realContext: FragmentActivity?
     get() {
-        var context = context
-        while (context is android.content.ContextWrapper) {
-            if (context is FragmentActivity) {
-                return context
-            }
-            context = context.baseContext
-        }
-        return null
+        return context.activityContext
     }
 
 /**
