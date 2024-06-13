@@ -186,18 +186,37 @@ public class AESUtils {
 
     @NonNull
     public static IvParameterSpec generateParameterSpecByIV(String ivContent) {
-        Timber.d("generateParameterSpec: ivBytes = %s", ivContent);
+        Timber.d("generateParameterSpec: ivContent = %s", ivContent);
         return new IvParameterSpec(ivContent.getBytes());
     }
 
-    public static String generateAESKey(
+    @NonNull
+    public static IvParameterSpec generateParameterSpecByIV(byte[] ivBytes) {
+        Timber.d("generateParameterSpec: ivBytes = %s", Arrays.toString(ivBytes));
+        return new IvParameterSpec(ivBytes);
+    }
+
+    /**
+     * @see #generateAESKey(String, int)
+     */
+    public static String generateAESKeyToBase64(
+            @NonNull String algorithm,
+            int length
+    ) throws NoSuchAlgorithmException {
+        return Base64.encodeToString(generateAESKey(algorithm, length), Base64.NO_WRAP);
+    }
+
+    /**
+     * @param length AES（Advanced Encryption Standard）的密钥长度通常是 128 比特（16 字节）、192 比特（24 字节）或 256 比特（32 字节）。这些密钥长度分别对应 AES 算法的三种变体：AES-128、AES-192和AES-256。AES-128 是最常用的，因为它提供了很高的安全性，并且速度相对较快。AES-192 和 AES-256 提供了更高的安全性，但可能会稍微慢一些，因为密钥长度更长。选择哪种密钥长度取决于应用的安全需求和性能要求。
+     */
+    public static byte[] generateAESKey(
             @NonNull String algorithm,
             int length
     ) throws NoSuchAlgorithmException {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm);
         keyGenerator.init(length);
         SecretKey secretKey = keyGenerator.generateKey();
-        return Base64.encodeToString(secretKey.getEncoded(), Base64.NO_WRAP);
+        return secretKey.getEncoded();
     }
 
     ///////////////////////////////////////////////////////////////////////////
