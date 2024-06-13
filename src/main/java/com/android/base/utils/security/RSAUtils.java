@@ -227,7 +227,7 @@ public final class RSAUtils {
      * @return the first of returned Pair is publicKey and the second is privateKey.
      * @see #generateRSAKeyPair(int)
      */
-    public static Pair<String, String> generateRSAKeyPairInString(int keyLength) throws NoSuchAlgorithmException {
+    public static Pair<String, String> generateRsaKeyPairInBase64(int keyLength) throws NoSuchAlgorithmException {
         KeyPair generatedKeyPair = generateRSAKeyPair(keyLength);
         String publicKey = EncodeUtils.base64Encode2String(generatedKeyPair.getPublic().getEncoded());
         String privateKey = EncodeUtils.base64Encode2String(generatedKeyPair.getPrivate().getEncoded());
@@ -241,7 +241,7 @@ public final class RSAUtils {
      * @return the first of returned Pair is publicKey and the second is privateKey.
      * @see #generateRSAKeyPair(int, SecureRandom)
      */
-    public static Pair<String, String> generateRsaKeyPairInString(
+    public static Pair<String, String> generateRsaKeyPairInBase64(
             int keyLength,
             @NonNull SecureRandom secureRandom
     ) throws NoSuchAlgorithmException {
