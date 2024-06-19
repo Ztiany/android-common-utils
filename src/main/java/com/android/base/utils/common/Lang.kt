@@ -6,11 +6,13 @@ import java.io.Closeable
 import java.io.IOException
 
 sealed class Ext<out T> constructor(val boolean: Boolean)
-object Otherwise : Ext<Nothing>(true)
+
+data object Otherwise : Ext<Nothing>(true)
+
 class WithData<out T>(val data: T) : Ext<T>(false)
 
 /** 如果该对象不是 null，则执行 action。 */
-fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
+inline fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
     if (this != null) {
         return WithData(action())
     }
@@ -18,7 +20,7 @@ fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
 }
 
 /** 如果该对象是 null，则执行 action。 */
-fun <T, E> T?.ifNull(action: () -> E) = if (this == null) {
+inline fun <T, E> T?.ifNull(action: () -> E) = if (this == null) {
     WithData(action())
 } else {
     Otherwise
