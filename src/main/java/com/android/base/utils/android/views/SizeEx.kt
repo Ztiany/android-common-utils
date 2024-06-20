@@ -2,62 +2,56 @@
 
 package com.android.base.utils.android.views
 
-import android.content.res.Resources
+import android.content.Context
 import android.util.TypedValue
+import android.view.View
+import androidx.fragment.app.Fragment
 import kotlin.math.roundToInt
 
-fun dip(dp: Float): Float {
-    return dp * getContextResource().displayMetrics.density
-}
+context(Context)
+val Float.dip: Float
+    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics)
 
-fun dip(dp: Int): Int {
-    return (dp * getContextResource().displayMetrics.density).roundToInt()
-}
+context(Context)
+val Int.dip: Int
+    get() = toFloat().dip.roundToInt()
 
-fun sp(sp: Float): Float {
-    return sp * getContextResource().displayMetrics.scaledDensity
-}
+context(Fragment)
+val Float.dip: Float
+    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics)
 
-fun sp(sp: Int): Int {
-    return (sp * getContextResource().displayMetrics.scaledDensity).roundToInt()
-}
+context(Fragment)
+val Int.dip: Int
+    get() = toFloat().dip.roundToInt()
 
-fun pxToDp(px: Float): Float {
-    return px / getContextResource().displayMetrics.density
-}
+context(View)
+val Float.dip: Float
+    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics)
 
-fun pxToDp(px: Int): Int {
-    return (px / getContextResource().displayMetrics.density).roundToInt()
-}
+context(View)
+val Int.dip: Int
+    get() = toFloat().dip.roundToInt()
 
-fun pxToSp(px: Float): Float {
-    return px / getContextResource().displayMetrics.scaledDensity
-}
+context(Context)
+val Float.sp: Float
+    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this, resources.displayMetrics)
 
-fun pxToSp(px: Int): Int {
-    return (px / getContextResource().displayMetrics.scaledDensity).roundToInt()
-}
+context(Context)
+val Int.sp: Int
+    get() = toFloat().sp.roundToInt()
 
-/**
- * 各种单位转换，该方法存在于[TypedValue] 中。
- *
- * @param unit  单位
- * @param value 值
- * @return 转换结果
- */
-fun applyDimension(unit: Int, value: Float): Float {
-    val metrics = getContextResource().displayMetrics
-    when (unit) {
-        TypedValue.COMPLEX_UNIT_PX -> return value
-        TypedValue.COMPLEX_UNIT_DIP -> return value * metrics.density
-        TypedValue.COMPLEX_UNIT_SP -> return value * metrics.scaledDensity
-        TypedValue.COMPLEX_UNIT_PT -> return value * metrics.xdpi * (1.0F / 72)
-        TypedValue.COMPLEX_UNIT_IN -> return value * metrics.xdpi
-        TypedValue.COMPLEX_UNIT_MM -> return value * metrics.xdpi * (1.0F / 25.4F)
-    }
-    return 0f
-}
+context(Fragment)
+val Float.sp: Float
+    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this, resources.displayMetrics)
 
-private fun getContextResource(): Resources {
-    return getActivityContext().resources
-}
+context(Fragment)
+val Int.sp: Int
+    get() = toFloat().sp.roundToInt()
+
+context(View)
+val Float.sp: Float
+    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this, resources.displayMetrics)
+
+context(View)
+val Int.sp: Int
+    get() = toFloat().sp.roundToInt()

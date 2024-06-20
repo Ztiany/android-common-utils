@@ -8,40 +8,31 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.TypedValue
 import android.view.View
-import androidx.annotation.ArrayRes
 import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.android.base.utils.BaseUtils
+import com.google.android.material.color.MaterialColors
 
 ///////////////////////////////////////////////////////////////////////////
 // color & drawable
 ///////////////////////////////////////////////////////////////////////////
+
+@ColorInt
 fun Fragment.getColorCompat(@ColorRes colorRes: Int): Int {
-    val safeContext = context ?: return 0
-    return ContextCompat.getColor(safeContext, colorRes)
+    return ContextCompat.getColor(requireContext(), colorRes)
 }
 
 fun Fragment.getDrawableCompat(@DrawableRes colorRes: Int): Drawable? {
-    val safeContext = context ?: return null
-    return ContextCompat.getDrawable(safeContext, colorRes)
+    return ContextCompat.getDrawable(requireContext(), colorRes)
 }
 
-fun View.getColorCompat(@ColorRes colorRes: Int): Int {
-    val safeContext = context ?: return 0
-    return ContextCompat.getColor(safeContext, colorRes)
-}
-
-fun View.getDrawableCompat(@DrawableRes colorRes: Int): Drawable? {
-    val safeContext = context ?: return null
-    return ContextCompat.getDrawable(safeContext, colorRes)
-}
-
+@ColorInt
 fun Context.getColorCompat(@ColorRes id: Int): Int {
     return ContextCompat.getColor(this, id)
 }
@@ -50,14 +41,23 @@ fun Context.getDrawableCompat(@DrawableRes id: Int): Drawable? {
     return ContextCompat.getDrawable(this, id)
 }
 
+@ColorInt
+fun View.getColorCompat(@ColorRes colorRes: Int): Int {
+    val safeContext = context ?: return 0
+    return ContextCompat.getColor(safeContext, colorRes)
+}
+
+fun View.getDrawableCompat(@DrawableRes colorRes: Int): Drawable? {
+    return ContextCompat.getDrawable(context, colorRes)
+}
+
+@ColorInt
 fun RecyclerView.ViewHolder.getColorCompat(@ColorRes id: Int): Int {
-    val safeContext = this.itemView.context ?: return 0
-    return ContextCompat.getColor(safeContext, id)
+    return ContextCompat.getColor(itemView.context, id)
 }
 
 fun RecyclerView.ViewHolder.getDrawableCompat(@DrawableRes id: Int): Drawable? {
-    val safeContext = this.itemView.context ?: return null
-    return ContextCompat.getDrawable(safeContext, id)
+    return ContextCompat.getDrawable(itemView.context, id)
 }
 
 /**
@@ -69,26 +69,27 @@ fun Context.getColorStateListCompat(@ColorRes id: Int): ColorStateList {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-// style
+// styled resource
 ///////////////////////////////////////////////////////////////////////////
+
 /**
- * - [name] 资源的名称，如 ic_launcher 或者 com.example.android/drawable/ic_launcher(这时，下面两个参数可以省略)
+ * - [name] 资源的名称，如 `ic_launcher`，或者 `com.example.android/drawable/ic_launcher`，对于这种全限定名的 name，其他两个参数应该为空。
  * - [defType] 资源的类型，如 drawable
  * - [defPackage] 包名
  *
  * 返回资源 id
  */
-fun getResourceId(context: Context, name: String, defType: String = "", defPackage: String = ""): Int {
-    return context.resources.getIdentifier(name, defType, defPackage)
+fun Context.getResourceId(name: String, defType: String = "", defPackage: String = ""): Int {
+    return resources.getIdentifier(name, defType, defPackage)
 }
 
 /**
- * - attr, like [android.R.attr.selectableItemBackground] or other attr id.
+ * - [attr], like [android.R.attr.selectableItemBackground] or other attr id.
  */
-fun getResourceId(context: Context, attr: Int): Int {
+fun Context.getResourceId(@AttrRes attr: Int): Int {
     return try {
         val outValue = TypedValue()
-        context.theme.resolveAttribute(attr, outValue, true)
+        theme.resolveAttribute(attr, outValue, true)
         outValue.resourceId
     } catch (e: Exception) {
         e.printStackTrace()
@@ -96,17 +97,18 @@ fun getResourceId(context: Context, attr: Int): Int {
     }
 }
 
-fun getStyledColor(context: Context, @AttrRes attr: Int): Int {
-    val a = context.obtainStyledAttributes(null, intArrayOf(attr))
-    try {
-        return a.getColor(0, 0x000000)
-    } finally {
-        a.recycle()
-    }
+@ColorInt
+fun Context.getStyledColor(@AttrRes attr: Int, name: String): Int {
+    return MaterialColors.getColor(this, attr, "$name is not provided in the theme.")
 }
 
-fun getStyledDrawable(context: Context, @AttrRes attr: Int): Drawable? {
-    val a = context.obtainStyledAttributes(null, intArrayOf(attr))
+@ColorInt
+fun Context.getStyledColor(@AttrRes attr: Int, @ColorInt defaultColor: Int): Int {
+    return MaterialColors.getColor(this, attr, defaultColor)
+}
+
+fun Context.getStyledDrawable(@AttrRes attr: Int): Drawable? {
+    val a = obtainStyledAttributes(null, intArrayOf(attr))
     try {
         return a.getDrawable(0)
     } finally {
@@ -114,37 +116,10 @@ fun getStyledDrawable(context: Context, @AttrRes attr: Int): Drawable? {
     }
 }
 
-
-///////////////////////////////////////////////////////////////////////////
-// text
-///////////////////////////////////////////////////////////////////////////
-fun getText(@StringRes id: Int): CharSequence {
-    return getActivityContext().resources.getText(id)
-}
-
-fun getString(@StringRes id: Int): String {
-    return getActivityContext().resources.getString(id)
-}
-
-fun getString(@StringRes id: Int, vararg formatArgs: Any): String {
-    return getActivityContext().resources.getString(id, *formatArgs)
-}
-
-fun getStringArray(@ArrayRes id: Int): Array<String> {
-    return getActivityContext().resources.getStringArray(id)
-}
-
-fun getDimensionPixelSize(dimenId: Int): Int {
-    return getActivityContext().resources.getDimensionPixelSize(dimenId)
-}
-
-fun getIntArray(@ArrayRes id: Int): IntArray {
-    return getActivityContext().resources.getIntArray(id)
-}
-
 ///////////////////////////////////////////////////////////////////////////
 // URI
 ///////////////////////////////////////////////////////////////////////////
+
 fun createResourceUri(id: Int): Uri {
     return Uri.parse("android.resource://" + BaseUtils.getAppContext().packageName + "/" + id)
 }
