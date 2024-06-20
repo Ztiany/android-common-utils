@@ -32,14 +32,26 @@ fun <T> Fragment.getArgument(name: String): T? {
 // by property delegate
 ///////////////////////////////////////////////////////////////////////////
 
-/** 请确保 T 是 Bundle 所支持的类型。 */
+/**
+ * 生成一个属性代理类，用于获取 [Fragment] 的参数。请确保 T 是 Bundle 所支持的类型。
+ *
+ * - [name] 参数的 key，不传则使用字段名。
+ */
 fun <T> Fragment.argumentNullable(name: String? = null): ReadOnlyProperty<Fragment, T?> = FragmentArgumentPropertyNullable<T>(name)
 
-/** 请确保 T 是 Bundle 所支持的类型。 */
-fun <T> Fragment.argument(
-    name: String? = null,
-    defaultValue: T? = null,
-): ReadOnlyProperty<Fragment, T> = FragmentArgumentProperty(name, defaultValue)
+/**
+ * 生成一个属性代理类，用于获取 [Fragment] 的参数。请确保 T 是 Bundle 所支持的类型。
+ *
+ * - [name] 参数的 key，不传则使用字段名。
+ */
+fun <T> Fragment.argument(name: String? = null): ReadOnlyProperty<Fragment, T> = FragmentArgumentProperty(name, null)
+
+/**
+ * 生成一个属性代理类，用于获取 [Fragment] 的参数。请确保 T 是 Bundle 所支持的类型。
+ *
+ * - [name] 参数的 key，不传则使用字段名。
+ */
+fun <T> Fragment.argument(name: String? = null, defaultValue: T): ReadOnlyProperty<Fragment, T> = FragmentArgumentProperty(name, defaultValue)
 
 // --------------------------------------------------------------------------------------
 // Fragment
