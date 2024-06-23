@@ -5,14 +5,14 @@ package com.android.base.utils.common
 import java.io.Closeable
 import java.io.IOException
 
-sealed class Ext<out T> constructor(val boolean: Boolean)
+sealed class Ext<out T>(val boolean: Boolean)
 
 data object Otherwise : Ext<Nothing>(true)
 
 class WithData<out T>(val data: T) : Ext<T>(false)
 
 /** 如果该对象不是 null，则执行 action。 */
-inline fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
+inline infix fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
     if (this != null) {
         return WithData(action())
     }
@@ -20,13 +20,13 @@ inline fun <T, E> T?.ifNonNull(action: T.() -> E): Ext<E> {
 }
 
 /** 如果该对象是 null，则执行 action。 */
-inline fun <T, E> T?.ifNull(action: () -> E) = if (this == null) {
+inline infix fun <T, E> T?.ifNull(action: () -> E) = if (this == null) {
     WithData(action())
 } else {
     Otherwise
 }
 
-inline fun <T> Boolean.yes(block: () -> T): Ext<T> = when {
+inline infix fun <T> Boolean.yes(block: () -> T): Ext<T> = when {
     this -> {
         WithData(block())
     }
@@ -34,7 +34,7 @@ inline fun <T> Boolean.yes(block: () -> T): Ext<T> = when {
     else -> Otherwise
 }
 
-inline fun <T> Boolean.no(block: () -> T) = when {
+inline infix fun <T> Boolean.no(block: () -> T) = when {
     this -> Otherwise
     else -> {
         WithData(block())

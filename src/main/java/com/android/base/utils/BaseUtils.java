@@ -9,7 +9,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.android.base.utils.android.network.NetworkState;
-import com.android.base.utils.android.views.AntiShakeUtil;
+import com.android.base.utils.android.views.ViewInteractionEx;
 import com.blankj.utilcode.util.Utils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -58,7 +58,8 @@ public class BaseUtils {
      * @param clickInterval The interval time of the a click event.
      */
     public static void setClickInterval(long clickInterval) {
-        AntiShakeUtil.setClickInterval(clickInterval);
+        ViewInteractionEx.setViewClickThrottledTime(clickInterval);
+        ViewInteractionEx.setViewClickDebouncedTime(clickInterval);
     }
 
 }

@@ -5,19 +5,40 @@ package com.android.base.utils.android.views
 import android.annotation.SuppressLint
 import android.view.MotionEvent
 import android.view.View
+import com.android.base.utils.R
 
-fun View.onDebouncedClick(onClick: (View) -> Unit) {
+internal var viewClickThrottledTime = 200L
+internal var viewClickDebouncedTime = 200L
+
+fun View.onThrottledClickClick(milliseconds: Long = viewClickThrottledTime, onClick: (View) -> Unit) {
     setOnClickListener {
-        if (!AntiShakeUtil.isInvalidClick(this)) {
+        val currentTimeStamp = System.currentTimeMillis()
+        val lastClickTimeStamp = getTag(R.id.base_last_click_timestamp) as? Long ?: 0
+        if (currentTimeStamp - lastClickTimeStamp >= milliseconds) {
+            setTag(R.id.base_last_click_timestamp, currentTimeStamp)
             onClick(this)
         }
     }
 }
 
-fun View.onDebouncedClick(milliseconds: Long, onClick: (View) -> Unit) {
+fun View.onDebouncedClickClick(wait: Long = viewClickDebouncedTime, onClick: (View) -> Unit) {
     setOnClickListener {
-        if (!AntiShakeUtil.isInvalidClick(this, milliseconds)) {
-            onClick(this)
+        var action = (getTag(R.id.base_click_debounce_action) as? DebounceAction)
+        if (action == null) {
+            action = DebounceAction(this, onClick)
+            setTag(R.id.base_click_debounce_action, action)
+        } else {
+            action.block = onClick
+        }
+        removeCallbacks(action)
+        postDelayed(action, wait)
+    }
+}
+
+private class DebounceAction(val view: View, var block: ((View) -> Unit)) : Runnable {
+    override fun run() {
+        if (view.isAttachedToWindow) {
+            block(view)
         }
     }
 }
