@@ -10,7 +10,7 @@ import com.android.base.utils.R
 internal var viewClickThrottledTime = 200L
 internal var viewClickDebouncedTime = 200L
 
-fun View.onThrottledClickClick(milliseconds: Long = viewClickThrottledTime, onClick: (View) -> Unit) {
+fun View.onThrottledClick(milliseconds: Long = viewClickThrottledTime, onClick: (View) -> Unit) {
     setOnClickListener {
         val currentTimeStamp = System.currentTimeMillis()
         val lastClickTimeStamp = getTag(R.id.base_last_click_timestamp) as? Long ?: 0
@@ -21,7 +21,7 @@ fun View.onThrottledClickClick(milliseconds: Long = viewClickThrottledTime, onCl
     }
 }
 
-fun View.onDebouncedClickClick(wait: Long = viewClickDebouncedTime, onClick: (View) -> Unit) {
+fun View.onDebouncedClick(wait: Long = viewClickDebouncedTime, onClick: (View) -> Unit) {
     setOnClickListener {
         var action = (getTag(R.id.base_click_debounce_action) as? DebounceAction)
         if (action == null) {
