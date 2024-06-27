@@ -9,28 +9,28 @@ import androidx.fragment.app.Fragment
 import kotlin.math.roundToInt
 
 context(Context)
-val Float.dip: Float
+val Float.dp: Float
     get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics)
 
 context(Context)
-val Int.dip: Int
-    get() = toFloat().dip.roundToInt()
+val Int.dp: Int
+    get() = toFloat().dp.roundToInt()
 
 context(Fragment)
-val Float.dip: Float
+val Float.dp: Float
     get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics)
 
 context(Fragment)
-val Int.dip: Int
-    get() = toFloat().dip.roundToInt()
+val Int.dp: Int
+    get() = toFloat().dp.roundToInt()
 
 context(View)
-val Float.dip: Float
+val Float.dp: Float
     get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics)
 
 context(View)
-val Int.dip: Int
-    get() = toFloat().dip.roundToInt()
+val Int.dp: Int
+    get() = toFloat().dp.roundToInt()
 
 context(Context)
 val Float.sp: Float
