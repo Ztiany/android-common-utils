@@ -15,7 +15,7 @@ import com.android.base.utils.android.compat.AndroidVersion.atLeast
 import com.android.base.utils.common.otherwise
 import com.android.base.utils.common.yes
 
-val View.realContext: FragmentActivity?
+val View.activityContext: FragmentActivity?
     get() {
         return context.activityContext
     }

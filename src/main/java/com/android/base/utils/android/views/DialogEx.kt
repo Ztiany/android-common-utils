@@ -23,7 +23,7 @@ fun Dialog.onDismiss(action: () -> Unit): Dialog {
     return this
 }
 
-val Dialog.realContext: FragmentActivity?
+val Dialog.activityContext: FragmentActivity?
     get() {
         return context.activityContext
     }
