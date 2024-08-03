@@ -5,7 +5,7 @@ import android.os.Build;
 import androidx.annotation.ChecksSdkIntAtLeast;
 
 /**
- * 版本判断
+ * Android SDK 版本判断。
  */
 public class AndroidVersion {
 

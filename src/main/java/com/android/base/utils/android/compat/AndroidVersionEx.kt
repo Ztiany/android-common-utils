@@ -1,25 +1,38 @@
 package com.android.base.utils.android.compat
 
-inline fun ifSDKAbove(sdkVersion: Int, block: () -> Unit) {
-    if (AndroidVersion.above(sdkVersion)) {
-        block()
-    }
+import android.os.Build
+import androidx.annotation.ChecksSdkIntAtLeast
+
+/**
+ * Execute [f] only if the current Android SDK version is [sdkVersion].
+ * Do nothing otherwise.
+ */
+inline fun doAtSDK(sdkVersion: Int, f: () -> Unit) {
+    if (Build.VERSION.SDK_INT == sdkVersion) f()
 }
 
-inline fun ifSDKAt(sdkVersion: Int, block: () -> Unit) {
-    if (AndroidVersion.at(sdkVersion)) {
-        block()
-    }
+/**
+ * Execute [f] only if the current Android SDK version greater than [sdkVersion].
+ * Do nothing otherwise.
+ */
+@ChecksSdkIntAtLeast(parameter = 0, lambda = 1)
+inline fun doAboveSDK(sdkVersion: Int, f: () -> Unit) {
+    if (Build.VERSION.SDK_INT > sdkVersion) f()
 }
 
-inline fun ifSDKAtLeast(sdkVersion: Int, block: () -> Unit) {
-    if (AndroidVersion.atLeast(sdkVersion)) {
-        block()
-    }
+/**
+ * Execute [f] only if the current Android SDK version is [version] or newer.
+ * Do nothing otherwise.
+ */
+@ChecksSdkIntAtLeast(parameter = 0, lambda = 1)
+inline fun doFromSDK(version: Int, f: () -> Unit) {
+    if (Build.VERSION.SDK_INT >= version) f()
 }
 
-fun isSDKAbove(sdkVersion: Int) = AndroidVersion.above(sdkVersion)
-
-fun isSDKAt(sdkVersion: Int) = AndroidVersion.at(sdkVersion)
-
-fun isSDKAtLeast(sdkVersion: Int) = AndroidVersion.atLeast(sdkVersion)
+/**
+ * Execute [f] only if the current Android SDK version is [version] or older.
+ * Do nothing otherwise.
+ */
+inline fun doBeforeSDK(version: Int, f: () -> Unit) {
+    if (Build.VERSION.SDK_INT <= version) f()
+}
