@@ -135,7 +135,6 @@ public class SpCache {
     }
 
     private Object readDisk(String key, Object defaultObject) {
-        Timber.e("readDisk");
         SharedPreferences sp = getSharedPreferences();
 
         if (defaultObject instanceof String) {
