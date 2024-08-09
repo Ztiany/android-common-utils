@@ -43,11 +43,11 @@ inline fun <T> List<T>.findFrom(startIndex: Int = 0, predicate: (T) -> Boolean):
 /**
  * Find the first element that matches the given [predicate] and return the element with its index. Null and -1 will be returned if no element is found.
  */
-fun <E> Collection<E>.findWithIndex(predicate: (E) -> Boolean): Pair<E?, Int> {
+fun <E> Collection<E>.findWithIndex(predicate: (E) -> Boolean): Pair<Int, E?> {
     for ((index, element) in this.withIndex()) {
         if (predicate(element)) {
-            return Pair(element, index)
+            return Pair(index, element)
         }
     }
-    return Pair(null, -1)
+    return Pair(-1, null)
 }
