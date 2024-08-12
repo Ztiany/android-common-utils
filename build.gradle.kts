@@ -22,15 +22,14 @@ dependencies {
     compileOnly(libs.androidx.appcompat)
     compileOnly(libs.google.ui.material)
     compileOnly(libs.androidx.viewpager2)
-
     // kotlin
     compileOnly(libs.kotlin.stdlib)
     compileOnly(libs.kotlin.reflect)
     compileOnly(libs.kotlinx.coroutines)
     compileOnly(libs.kotlinx.coroutines.android)
-
     // utils
-    implementation(libs.square.okio)
+    compileOnly(libs.square.okio)
+    compileOnly(libs.google.gson)
+    // log
     implementation(libs.jakewharton.timber)
-    implementation(libs.google.gson)
 }
