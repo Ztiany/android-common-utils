@@ -29,24 +29,13 @@ import com.android.base.utils.R;
  * A tool for adjusting system bars.
  *
  * <p>
- * other useful libs you may need to know:
- * <ol>
- * <li><a href="https://github.com/Zackratos/UltimateBarX">UltimateBarX</a></li>
- * <li><a href="https://github.com/Veaer/Glass">Glass</a></a></li>
- * <li><a href="https://github.com/H07000223/FlycoSystemBar">FlycoSystemBar</a></a></li>
- * <li><a href="https://github.com/niorgai/StatusBarCompat">StatusBarCompat</a></a></li>
- * <li><a href="https://github.com/laobie/StatusBarUtil">StatusBarUtil</a></a></li>
- * <li><a href="https://github.com/msdx/status-bar-compat">status-bar-compat</a></a></li>
- * </ol>
- * </p>
- *
- * <p>
- * other useful utils you may need to know:
+ * There are some useful utils you may need to know:
  * <ol>
  * <li>{@link ViewCompat}</li>
  * <li>{@link WindowCompat}</li>
  * <li>{@link WindowInsetsCompat}</li>
  * <li>{@link androidx.core.view.WindowInsetsControllerCompat}</li>
+ * <li>{@link androidx.activity.EdgeToEdge}</li>
  * </ol>
  * </p>
  *
@@ -62,6 +51,10 @@ public class SystemBarCompat {
     // Full Screen
     ///////////////////////////////////////////////////////////////////////////
 
+    /**
+     * @deprecated {@link  WindowManager.LayoutParams#FLAG_FULLSCREEN} is not recommended to use.
+     */
+    @Deprecated
     public static void setFullScreen(@NonNull Activity activity) {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
@@ -71,24 +64,24 @@ public class SystemBarCompat {
     ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * 让布局延伸至状态栏与导览区域，将状态栏和导航栏的颜色设置为透明色。
+     * Let the layout extend to the status bar and navigation area, and set the color of the status bar and navigation bar to transparent.
      */
-    public static void setExtendsToSystemBar(@NonNull Activity activity, boolean extend) {
-        extendToSystemBarInternally(activity, extend, extend);
+    public static void setExtendsToSystemBars(@NonNull Activity activity, boolean extend) {
+        extendToSystemBarsInternally(activity, extend, extend);
     }
 
-    public static void setExtendsToSystemBar(@NonNull Activity activity, boolean status, boolean navigation) {
-        extendToSystemBarInternally(activity, status, navigation);
+    public static void setExtendsToSystemBars(@NonNull Activity activity, boolean status, boolean navigation) {
+        extendToSystemBarsInternally(activity, status, navigation);
     }
 
     @Deprecated
-    public static void setExtendsToSystemBarOnlyFor19(@NonNull Activity activity, boolean status, boolean navigation) {
+    public static void setExtendsToSystemBarsOnlyFor19(@NonNull Activity activity, boolean status, boolean navigation) {
         if (AndroidVersion.at(19)) {
             setTranslucentSystemBar(activity.getWindow(), status, navigation);
         }
     }
 
-    private static void extendToSystemBarInternally(@NonNull Activity activity, boolean status, boolean navigation) {
+    private static void extendToSystemBarsInternally(@NonNull Activity activity, boolean status, boolean navigation) {
         Window window = activity.getWindow();
         if (AndroidVersion.atLeast(30) && (status == navigation)) {
 
@@ -100,9 +93,7 @@ public class SystemBarCompat {
 
             if (navigation && status) {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-                window.getDecorView().setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                );
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
                 setStatusBarColorAfter19(activity, Color.TRANSPARENT);
                 setNavigationBarColorAfter19(activity, Color.TRANSPARENT);
             } else if (status) {
@@ -113,11 +104,15 @@ public class SystemBarCompat {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                 window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
                 setNavigationBarColorAfter19(activity, Color.TRANSPARENT);
+            } else {
+                window.clearFlags(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
             }
 
         } else if (AndroidVersion.at(19)) {
             setTranslucentSystemBar(window, status, navigation);
         }
+
+        displayInNotch(window);
     }
 
     private static void setTranslucentSystemBar(Window win, boolean status, boolean navigation) {
@@ -175,14 +170,13 @@ public class SystemBarCompat {
     }
 
     /**
-     * 适用于 Android 4.4，在 rootView 中添加一个与 StatusBar 高度一样的 View，用于对状态栏着色。
+     * This method is only available for Android 4.4. What this method does is to add a View with the same height as the StatusBar
+     * to the rootView for coloring the StatusBar.
      *
-     * @param activity 上下文
-     * @param rootView 用于添加着色 View 的根 View
-     * @param color    着色
-     * @return 被添加的 View
+     * @param rootView The root view used to add the coloring View.
+     * @param color    The color of the StatusBar.
+     * @return The View that colors the StatusBar.
      */
-    @SuppressWarnings("WeakerAccess")
     private static View setupStatusBarViewOn19(@NonNull Activity activity, ViewGroup rootView, @ColorInt int color) {
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.KITKAT) {
             return null;
@@ -205,14 +199,14 @@ public class SystemBarCompat {
     ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * 获取状态栏高度，如果状态栏没有展示则返回 0。
+     * Get the height of the StatusBar, if the StatusBar is not displayed, return 0.
      */
     public static int getStatusBarHeight(@NonNull Activity activity) {
         int statusBarHeight = 0;
         /*
-            1. 该方法返回分发给视图树的原始 insets
-            2. Insets 只有在 view attached 才是可用的
-            3. API 20 及以下 永远 返回 false
+            1. This method returns the original insets dispatched to the view tree.
+            2. Insets are only available when the view is attached.
+            3. API 20 and below always return false
          */
         WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
         if (windowInsets != null) {
@@ -221,16 +215,10 @@ public class SystemBarCompat {
         return statusBarHeight;
     }
 
-    /**
-     * 获取状态栏高度。
-     */
     public static int getStatusBarHeightIgnoreVisibility(@NonNull Activity activity) {
         return getStatusBarHeightIgnoreVisibility(activity, activity.getWindow());
     }
 
-    /**
-     * 获取状态栏高度。
-     */
     public static int getStatusBarHeightIgnoreVisibility(@NonNull Context context, @NonNull Window window) {
         int statusBarHeight = 0;
         @SuppressLint("InternalInsetResource")
@@ -250,7 +238,7 @@ public class SystemBarCompat {
     }
 
     /**
-     * 获取 NavigationBar 高度，如果 NavigationBar 没有展示则返回 0。
+     * Get the height of the NavigationBar, if the NavigationBar is not displayed, return 0.
      */
     public static int getNavigationBarHeight(@NonNull Activity activity) {
         int navigationBarHeight = 0;
@@ -261,16 +249,10 @@ public class SystemBarCompat {
         return navigationBarHeight;
     }
 
-    /**
-     * 获取 NavigationBar 高度。
-     */
     public static int getNavigationBarHeightIgnoreVisibility(@NonNull Activity activity) {
         return getNavigationBarHeightIgnoreVisibility(activity, activity.getWindow());
     }
 
-    /**
-     * 获取 NavigationBar 高度。
-     */
     public static int getNavigationBarHeightIgnoreVisibility(@NonNull Context context, @NonNull Window window) {
         int navigationBarHeight = 0;
         Resources resources = context.getResources();
@@ -291,28 +273,13 @@ public class SystemBarCompat {
     }
 
     /**
-     * 是否存在 NavigationBar。
-     * <br/><br/>
-     * 一些老的实现可以参考：
-     *
-     * <ol>
-     *     <li> <a href='https://stackoverflow.com/questions/28983621/detect-soft-navigation-bar-availability-in-android-device-progmatically'>detect-soft-navigation-bar-availability-in-android-device-progmatically</a> </li>
-     *     <li> <a href='https://windysha.github.io/2018/02/07/Android-APP%E9%80%82%E9%85%8D%E5%85%A8%E9%9D%A2%E5%B1%8F%E6%89%8B%E6%9C%BA%E7%9A%84%E6%8A%80%E6%9C%AF%E8%A6%81%E7%82%B9/'>Android APP适配全面屏手机的技术要点</a> </li>
-     *     <li> <a href='https://github.com/roughike/BottomBar/blob/master/bottom-bar/src/main/java/com/roughike/bottombar/NavbarUtils.java'>NavbarUtils</a> </li>
-     * </ol>
-     * <p>
-     * 现在可以通过 {@link androidx.core.view.WindowInsetsCompat} 来判断，具体可以参考 <a href='https://juejin.cn/post/7038422081528135687'>Android Detail：Window 篇—— WindowInsets 与 fitsSystemWindow</a>
+     * @see androidx.core.view.WindowInsetsCompat
+     * @see <a href='https://juejin.cn/post/7038422081528135687'>Android Detail：Window 篇—— WindowInsets 与 fitsSystemWindow</a>
      */
     public static boolean hasNavigationBar(@NonNull Activity activity) {
         return getNavigationBarHeight(activity) > 0;
     }
 
-    /**
-     * 获取ActionBar高度
-     *
-     * @param activity activity
-     * @return ActionBar高度
-     */
     public static int getActionBarHeight(@NonNull Activity activity) {
         TypedValue tv = new TypedValue();
         if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
@@ -326,15 +293,17 @@ public class SystemBarCompat {
     ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * @see <a href='https://developer.android.com/guide/topics/display-cutout?hl=zh-cn'>支持刘海屏</a>
-     * @see <a href='https://juejin.im/post/5cf635846fb9a07f0c466ea7'>Android刘海屏、水滴屏全面屏适配方案</a>
+     * @see <a href='https://developer.android.com/develop/ui/views/layout/display-cutout'>Support display cutouts</a>
+     * @see <a href='https://juejin.im/post/5cf635846fb9a07f0c466ea7'>Android 刘海屏、水滴屏全面屏适配方案</a>
      */
     public static void displayInNotch(@NonNull Window window) {
-        if (AndroidVersion.atLeast(28)) {
-            WindowManager.LayoutParams attributes = window.getAttributes();
+        WindowManager.LayoutParams attributes = window.getAttributes();
+        if (AndroidVersion.atLeast(30)) {
+            attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+        } else if (AndroidVersion.atLeast(28)) {
             attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-            window.setAttributes(attributes);
         }
+        window.setAttributes(attributes);
     }
 
     /**
@@ -345,7 +314,7 @@ public class SystemBarCompat {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Light or Dark StatusBar
+    // Light or Dark StatusBar/NavigationBar
     ///////////////////////////////////////////////////////////////////////////
 
     public static void setLightStatusBar(Window window, boolean lightStatusBar) {
@@ -355,6 +324,15 @@ public class SystemBarCompat {
 
     public static void setLightStatusBar(Activity activity, boolean lightStatusBar) {
         setLightStatusBar(activity.getWindow(), lightStatusBar);
+    }
+
+    public static void setLightNavigationBar(Window window, boolean lightNavigationBar) {
+        WindowInsetsControllerCompat windowInsetController = WindowCompat.getInsetsController(window, window.getDecorView());
+        windowInsetController.setAppearanceLightNavigationBars(lightNavigationBar);
+    }
+
+    public static void setLightNavigationBar(Activity activity, boolean lightNavigationBar) {
+        setLightNavigationBar(activity.getWindow(), lightNavigationBar);
     }
 
 }
