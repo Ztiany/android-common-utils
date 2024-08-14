@@ -18,7 +18,7 @@ fun PopupMenu.setMenus(items: Array<String>, ids: IntArray): PopupMenu {
     return this
 }
 
-fun PopupMenu.onMenuItemClick(listener: (id: Int) -> Unit): PopupMenu {
+fun PopupMenu.onItemClick(listener: (id: Int) -> Unit): PopupMenu {
     setOnMenuItemClickListener {
         listener(it.itemId)
         true
@@ -31,7 +31,7 @@ fun MenuItem.alwaysShow(): MenuItem {
     return this
 }
 
-fun MenuItem.onMenuItemClick(onClick: (MenuItem) -> Unit): MenuItem {
+fun MenuItem.onItemClick(onClick: (MenuItem) -> Unit): MenuItem {
     setOnMenuItemClickListener {
         onClick(it)
         true
