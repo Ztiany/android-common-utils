@@ -36,3 +36,10 @@ inline fun doFromSDK(version: Int, f: () -> Unit) {
 inline fun doBeforeSDK(version: Int, f: () -> Unit) {
     if (Build.VERSION.SDK_INT <= version) f()
 }
+
+/**
+ * Execute [f] only if the current Android SDK version is in the range [versionStart, versionEnd].
+ */
+inline fun doInSDKRange(versionStart: Int, versionEnd: Int, f: () -> Unit) {
+    if (Build.VERSION.SDK_INT in versionStart..versionEnd) f()
+}

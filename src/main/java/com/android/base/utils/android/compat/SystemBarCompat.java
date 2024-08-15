@@ -66,53 +66,80 @@ public class SystemBarCompat {
     /**
      * Let the layout extend to the status bar and navigation area, and set the color of the status bar and navigation bar to transparent.
      */
-    public static void setExtendsToSystemBars(@NonNull Activity activity, boolean extend) {
-        extendToSystemBarsInternally(activity, extend, extend);
+    public static void setLayoutExtendsToSystemBars(@NonNull Activity activity, boolean extend) {
+        extendToSystemBarsInternally(activity, extend, extend, extend, extend, extend);
     }
 
-    public static void setExtendsToSystemBars(@NonNull Activity activity, boolean status, boolean navigation) {
-        extendToSystemBarsInternally(activity, status, navigation);
+    public static void setLayoutExtendsToSystemBars(@NonNull Activity activity, boolean status, boolean navigation) {
+        extendToSystemBarsInternally(activity, status, status, navigation, navigation, status && navigation);
+    }
+
+    public static void setLayoutExtendsToSystemBars(
+            @NonNull Activity activity,
+            boolean status,
+            boolean transparentStatusBar,
+            boolean navigation,
+            boolean transparentNavigationBar,
+            boolean displayInCutout) {
+        extendToSystemBarsInternally(activity, status, transparentStatusBar, navigation, transparentNavigationBar, displayInCutout);
     }
 
     @Deprecated
-    public static void setExtendsToSystemBarsOnlyFor19(@NonNull Activity activity, boolean status, boolean navigation) {
+    public static void setLayoutExtendsToSystemBarsOnlyFor19(@NonNull Activity activity, boolean status, boolean navigation) {
         if (AndroidVersion.at(19)) {
             setTranslucentSystemBar(activity.getWindow(), status, navigation);
         }
     }
 
-    private static void extendToSystemBarsInternally(@NonNull Activity activity, boolean status, boolean navigation) {
+    private static void extendToSystemBarsInternally(
+            @NonNull Activity activity,
+            boolean status,
+            boolean transparentStatusBar,
+            boolean navigation,
+            boolean transparentNavigationBar,
+            boolean displayInCutout
+    ) {
         Window window = activity.getWindow();
         if (AndroidVersion.atLeast(30) && (status == navigation)) {
 
             WindowCompat.setDecorFitsSystemWindows(window, !status);
-            setStatusBarColorAfter19(activity, Color.TRANSPARENT);
-            setNavigationBarColorAfter19(activity, Color.TRANSPARENT);
-
+            if (transparentStatusBar) {
+                setStatusBarColorAfter19(activity, Color.TRANSPARENT);
+            }
+            if (transparentNavigationBar) {
+                setNavigationBarColorAfter19(activity, Color.TRANSPARENT);
+            }
         } else if (AndroidVersion.atLeast(21)) {
 
             if (navigation && status) {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                 window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-                setStatusBarColorAfter19(activity, Color.TRANSPARENT);
-                setNavigationBarColorAfter19(activity, Color.TRANSPARENT);
+                if (transparentStatusBar) {
+                    setStatusBarColorAfter19(activity, Color.TRANSPARENT);
+                }
+                if (transparentNavigationBar) {
+                    setNavigationBarColorAfter19(activity, Color.TRANSPARENT);
+                }
             } else if (status) {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                 window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                setStatusBarColorAfter19(activity, Color.TRANSPARENT);
+                if (transparentStatusBar) {
+                    setStatusBarColorAfter19(activity, Color.TRANSPARENT);
+                }
             } else if (navigation) {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                 window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-                setNavigationBarColorAfter19(activity, Color.TRANSPARENT);
-            } else {
-                window.clearFlags(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+                if (transparentNavigationBar) {
+                    setNavigationBarColorAfter19(activity, Color.TRANSPARENT);
+                }
             }
-
         } else if (AndroidVersion.at(19)) {
             setTranslucentSystemBar(window, status, navigation);
         }
 
-        displayInNotch(window);
+        if (displayInCutout) {
+            setLayoutDisplayInCutout(activity);
+        }
     }
 
     private static void setTranslucentSystemBar(Window win, boolean status, boolean navigation) {
@@ -199,7 +226,13 @@ public class SystemBarCompat {
     ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * Get the height of the StatusBar, if the StatusBar is not displayed, return 0.
+     * Get the height of the StatusBar, if the StatusBar is not displayed, return 0. Visibility of window decorations means whether these
+     * elements are currently visible or hidden. For example:
+     *
+     * <ul>
+     *     <li>Status Bar: This is the bar at the top of the screen that typically shows notifications and system information.</li>
+     *     <li>Navigation Bar: This is the bar at the bottom of the screen with back, home, and recent apps buttons.</li>
+     * </ul>
      */
     public static int getStatusBarHeight(@NonNull Activity activity) {
         int statusBarHeight = 0;
@@ -238,7 +271,13 @@ public class SystemBarCompat {
     }
 
     /**
-     * Get the height of the NavigationBar, if the NavigationBar is not displayed, return 0.
+     * Get the height of the NavigationBar, if the NavigationBar is not displayed, return 0. Visibility of window decorations means whether these
+     * elements are currently visible or hidden. For example:
+     *
+     * <ul>
+     *     <li>Status Bar: This is the bar at the top of the screen that typically shows notifications and system information.</li>
+     *     <li>Navigation Bar: This is the bar at the bottom of the screen with back, home, and recent apps buttons.</li>
+     * </ul>
      */
     public static int getNavigationBarHeight(@NonNull Activity activity) {
         int navigationBarHeight = 0;
@@ -289,14 +328,14 @@ public class SystemBarCompat {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Notch
+    // Cutout
     ///////////////////////////////////////////////////////////////////////////
 
     /**
      * @see <a href='https://developer.android.com/develop/ui/views/layout/display-cutout'>Support display cutouts</a>
      * @see <a href='https://juejin.im/post/5cf635846fb9a07f0c466ea7'>Android 刘海屏、水滴屏全面屏适配方案</a>
      */
-    public static void displayInNotch(@NonNull Window window) {
+    public static void setLayoutDisplayInCutout(@NonNull Window window) {
         WindowManager.LayoutParams attributes = window.getAttributes();
         if (AndroidVersion.atLeast(30)) {
             attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
@@ -307,10 +346,10 @@ public class SystemBarCompat {
     }
 
     /**
-     * @see #displayInNotch(Window)
+     * @see #setLayoutDisplayInCutout(Window)
      */
-    public static void displayInNotch(@NonNull Activity activity) {
-        displayInNotch(activity.getWindow());
+    public static void setLayoutDisplayInCutout(@NonNull Activity activity) {
+        setLayoutDisplayInCutout(activity.getWindow());
     }
 
     ///////////////////////////////////////////////////////////////////////////
