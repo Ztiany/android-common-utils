@@ -30,11 +30,11 @@ inline fun doFromSDK(version: Int, f: () -> Unit) {
 }
 
 /**
- * Execute [f] only if the current Android SDK version is [version] or older.
+ * Execute [f] only if the current Android SDK version is older than [version].
  * Do nothing otherwise.
  */
 inline fun doBeforeSDK(version: Int, f: () -> Unit) {
-    if (Build.VERSION.SDK_INT <= version) f()
+    if (Build.VERSION.SDK_INT < version) f()
 }
 
 /**

@@ -10,11 +10,13 @@ public class AndroidVersion {
         throw new UnsupportedOperationException();
     }
 
-    @ChecksSdkIntAtLeast(parameter = 0)
     public static boolean above(int sdkVersion) {
         return Build.VERSION.SDK_INT > sdkVersion;
     }
 
+    public static boolean before(int sdkVersion) {
+        return Build.VERSION.SDK_INT < sdkVersion;
+    }
 
     @ChecksSdkIntAtLeast(parameter = 0)
     public static boolean atLeast(int sdkVersion) {
