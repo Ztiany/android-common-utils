@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.blankj.utilcode.util.ScreenUtils
 import timber.log.Timber
 
 /**
@@ -52,7 +53,7 @@ class ImmerseModeCompat(private val activity: ComponentActivity) {
     }
 
     private val screenHeight by lazy {
-        SystemBarCompat.getNavigationBarHeightIgnoreVisibility(activity)
+        activity.resources.displayMetrics.heightPixels
     }
 
     init {
@@ -63,7 +64,8 @@ class ImmerseModeCompat(private val activity: ComponentActivity) {
 
     fun setFullScreen() {
         // Configure the behavior of the hidden system bars
-        windowInsetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        windowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         // Hide both the status bar and the navigation bar
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
         //extend to system bars
@@ -76,7 +78,8 @@ class ImmerseModeCompat(private val activity: ComponentActivity) {
             Timber.d("displayInNotch")
             val window = activity.window
             val attributes = window.attributes
-            attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             window.attributes = attributes
         }
     }
